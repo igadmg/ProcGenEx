@@ -142,12 +142,12 @@ namespace ProcGenEx
 			return result;
 		}
 
-		public int[] AddPlane(Plane p, Vector3 origin, Vector2 size, Vector2i step)
+		public int[] AddPlane(Plane p, Vector3 origin, Vector2 size, vec2i step)
 		{
 			return AddPlane(p, origin, size, step, Vector3.forward);
 		}
 
-		public int[] AddPlane(Plane p, Vector3 origin, Vector2 size, Vector2i step, Vector3 forward)
+		public int[] AddPlane(Plane p, Vector3 origin, Vector2 size, vec2i step, Vector3 forward)
 		{
 			Vector3 right = Vector3.Cross(p.normal, forward);
 			int cn = step.x + 1;
@@ -336,23 +336,23 @@ namespace ProcGenEx
 
 		public void UVMapPlane(Plane plane, Vector3 forward, int[] vs)
 		{
-			UVMapPlane(plane, forward, AaBb2.one, vs);
+			UVMapPlane(plane, forward, aabb2.one, vs);
 		}
 
-		public void UVMapPlane(Plane plane, Vector3 forward, AaBb2 uvrect, int[] vs)
+		public void UVMapPlane(Plane plane, Vector3 forward, aabb2 uvrect, int[] vs)
 		{
-			Vector2[] pvs = new Vector2[vs.Length];
+			vec2[] pvs = new vec2[vs.Length];
 
-			AaBb2 b = AaBb2.empty;
+			aabb2 b = aabb2.empty;
 			Quaternion q = Quaternion.LookRotation(forward, plane.normal);
 			for (int i = 0; i < vs.Length; i++) {
-				pvs[i] = (q * vertices[vs[i]]).xz();
+				pvs[i] = MathEx.Convert.ToVec2((q * vertices[vs[i]]).xz());
 				b = b.Extend(pvs[i]);
 			}
 
 			Debug.Log(b);
 			for (int i = 0; i < vs.Length; i++) {
-				uvs[vs[i]] = uvrect.a + uvrect.size.Mul((pvs[i] - b.a).Div(b.size));
+				uvs[vs[i]] = MathEx.Convert.ToVector2(uvrect.a + uvrect.size.Mul((pvs[i] - b.a).Div(b.size)));
 				Debug.Log(uvs[vs[i]]);
 			}
 		}
