@@ -31,7 +31,7 @@ namespace ProcGenEx
 			m.uv = uvs.ConvertAll<Vector2>(v => MathEx.Convert.ToVector2(v)).ToArray();
 			m.triangles = triangles.ToArray();
 
-			m.Finalize();
+			m.Apply();
 			
 			return m;
 		}
