@@ -26,9 +26,9 @@ namespace ProcGenEx
 		{
 			Mesh m = new Mesh();
 
-			m.vertices = vertices.ConvertAll<Vector3>(v => MathEx.Convert.ToVector3(v)).ToArray();
-			m.normals = normals.ConvertAll<Vector3>(v => MathEx.Convert.ToVector3(v)).ToArray();
-			m.uv = uvs.ConvertAll<Vector2>(v => MathEx.Convert.ToVector2(v)).ToArray();
+			m.vertices = vertices.ConvertAll<Vector3>(v => v.ToVector3()).ToArray();
+			m.normals = normals.ConvertAll<Vector3>(v => v.ToVector3()).ToArray();
+			m.uv = uvs.ConvertAll<Vector2>(v => v.ToVector2()).ToArray();
 			m.triangles = triangles.ToArray();
 
 			m.Apply();
