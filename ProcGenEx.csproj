@@ -42,10 +42,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Plugins\ProcGenEx\MeshBuilder.cs" />
+    <Compile Include="Assets\Plugins\ProcGenEx\Icosahedron.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Assets\Plugins\ProcGenEx\MeshBuilder.cs.meta" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MathEx\MathEx.csproj">
