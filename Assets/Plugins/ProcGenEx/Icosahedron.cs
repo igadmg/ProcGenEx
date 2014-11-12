@@ -12,81 +12,74 @@ namespace ProcGenEx
 	{
 		public static MeshBuilder Create()
 		{
-			MeshBuilder mesh = new MeshBuilder(12, 20);
+			MeshBuilder mesh = new MeshBuilder(22, 20);
+			List<int> vs = new List<int>(22);
 
-			float phi = (1 + MathEx.MathEx.Sqrt(5)) / 2;
-			List<int> vs = new List<int>(12);
+			vec3 north = vec3.up;
+			vec3 south = vec3.down;
+			float vi = 90 * Mathf.Deg2Rad - Mathf.Atan(0.5f);
+			float da = 72 * Mathf.Deg2Rad;			
+			float uvx = 0, uvy = 0;
+			svec3 sv;
 
-			for (int i = 0; i < 4; i++) {
-				//v[ i ] = Vector( 0, -(i&2), -(i&1)*t ) ; 
-				vec3 v = new vec3(0, (i & 2) != 0 ? -1 : 1, (i & 1) != 0 ? -phi : phi).normalized * ((i == 0) ? 1.5f : 1);
-				vs.Add(mesh.CreateVertex(v, v));
+			float uvdx = 1.0f / 5.0f;
+			uvx = uvdx / 2.0f;
+			for (int i = 0; i < 5; i++, uvx += uvdx) {
+				vs.Add(mesh.CreateVertex(north, north, new vec2(uvx, 1.0f)));
 			}
 
-			for (int i = 4; i < 8; i++) {
-				//v[ i ] = Vector( -(i&2), -(i&1)*t, 0 ) ; 
-				vec3 v = new vec3((i & 2) != 0 ? -1 : 1, (i & 1) != 0 ? -phi : phi, 0).normalized * ((i == 4) ? 1.5f : 1);
-				vs.Add(mesh.CreateVertex(v, v));
+			uvy = 2.0f / 3.0f;
+			uvx = 0;
+			sv = new svec3(1.0f, vi, 0);
+			Debug.Log("NORTH {0}".format(sv));
+			for (int i = 0; i < 5; i++, uvx += uvdx, sv.a += da) {
+				vec3 cv = sv.ToVec3().normalized.xzy();
+				vs.Add(mesh.CreateVertex(cv, cv, new vec2(uvx, uvy)));
+			} {
+				vec3 cv = sv.ToVec3().normalized.xzy();
+				vs.Add(mesh.CreateVertex(cv, cv, new vec2(uvx, uvy)));
 			}
 
-			for (int i = 8; i < 12; i++) {
-				//v[ i ] = Vector( -(i&1)*t, 0, -(i&2) ) ; 
-				vec3 v = new vec3((i & 1) != 0 ? -phi : phi, 0, (i & 2) != 0 ? -1 : 1).normalized * ((i == 10) ? 1.5f : 1);
-				vs.Add(mesh.CreateVertex(v, v));
+			uvy = 1.0f / 3.0f;
+			uvx = uvdx / 2.0f;
+			sv = new svec3(1.0f, 180 * Mathf.Deg2Rad - vi, da / 2.0f);
+			Debug.Log("SOUTH {0}".format(sv));
+			for (int i = 0; i < 5; i++, uvx += uvdx, sv.a += da) {
+				vec3 cv = sv.ToVec3().normalized.xzy();
+				vs.Add(mesh.CreateVertex(cv, cv, new vec2(uvx, uvy)));
+			} {
+				vec3 cv = sv.ToVec3().normalized.xzy();
+				vs.Add(mesh.CreateVertex(cv, cv, new vec2(uvx, uvy)));
 			}
 
-			var v44 = mesh.CopyVertex(vs[4]);
-			var v1010 = mesh.CopyVertex(vs[10]);
+			uvx = uvdx;
+			for (int i = 0; i < 5; i++, uvx += uvdx) {
+				vs.Add(mesh.CreateVertex(south, south, new vec2(uvx, 0.0f)));
+			}
 
-			mesh.MakeTriangle(vs[0], vs[2], vs[8]);
-			mesh.MakeTriangle(vs[0], vs[6], vs[9]);
-			mesh.MakeTriangle(vs[0], vs[9], vs[2]);
-			mesh.MakeTriangle(vs[0], vs[8], vs[4]);
-			mesh.MakeTriangle(vs[0], v44, vs[6]);
+			mesh.MakeTriangle(vs[0], vs[6], vs[5]);
+			mesh.MakeTriangle(vs[1], vs[7], vs[6]);
+			mesh.MakeTriangle(vs[2], vs[8], vs[7]);
+			mesh.MakeTriangle(vs[3], vs[9], vs[8]);
+			mesh.MakeTriangle(vs[4], vs[10], vs[9]);
 
-			mesh.MakeTriangle(vs[3], vs[5], vs[7]);
-			mesh.MakeTriangle(vs[11], vs[3], vs[7]);
-			mesh.MakeTriangle(vs[1], vs[3], vs[11]);
-			mesh.MakeTriangle(vs[10], vs[5], vs[3]);
-			mesh.MakeTriangle(v1010, vs[3], vs[1]);
+			mesh.MakeTriangle(vs[6], vs[11], vs[5]);
+			mesh.MakeTriangle(vs[7], vs[12], vs[6]);
+			mesh.MakeTriangle(vs[8], vs[13], vs[7]);
+			mesh.MakeTriangle(vs[9], vs[14], vs[8]);
+			mesh.MakeTriangle(vs[10], vs[15], vs[9]);
+
+			mesh.MakeTriangle(vs[11], vs[6], vs[12]);
+			mesh.MakeTriangle(vs[12], vs[7], vs[13]);
+			mesh.MakeTriangle(vs[13], vs[8], vs[14]);
+			mesh.MakeTriangle(vs[14], vs[9], vs[15]);
+			mesh.MakeTriangle(vs[15], vs[10], vs[16]);
 			
-			mesh.MakeTriangle(vs[8], vs[10], vs[4]);
-			mesh.MakeTriangle(vs[8], vs[5], vs[10]);
-			mesh.MakeTriangle(vs[1], vs[6], v44);
-			mesh.MakeTriangle(v1010, vs[1], v44);
-			mesh.MakeTriangle(vs[2], vs[7], vs[5]);
-			mesh.MakeTriangle(vs[2], vs[9], vs[7]);
-			mesh.MakeTriangle(vs[11], vs[7], vs[9]);
-			mesh.MakeTriangle(vs[2], vs[5], vs[8]);
-			mesh.MakeTriangle(vs[1], vs[11], vs[6]);
-			mesh.MakeTriangle(vs[6], vs[11], vs[9]);
-
-			mesh.Hole(vs[0]);
-			mesh.Hole(vs[3]);			
-
-			//mesh.Rotate(Quaternion.LookRotation(mesh.vertices[vs[0]].ToVector3()));
-			var v0 = mesh.vertices[vs[0]];
-			var v4 = mesh.vertices[vs[4]];
-
-			var up = v0;
-			var right = v4;
-			var forward = (up % right).normalized;
-			//right = (up % forward).normalized;
-
-			/*
-			var r = Matrix4x4.identity
-				.Column(0, right.ToVector3())
-				.Column(1, up.ToVector3())
-				.Column(2, forward.ToVector3()).ToQuaternion();*/
-			var r = Quaternion.LookRotation(right.ToVector3());
-			mesh.Rotate(r);
-
-			for (int i = 0; i < mesh.vertices.Count; i++) {
-				var v = mesh.vertices[i];
-				
-				if (v.y < -0.98f)
-					Debug.Log("*** South POLE {0}".format(i));
-			}
+			mesh.MakeTriangle(vs[17], vs[11], vs[12]);
+			mesh.MakeTriangle(vs[18], vs[12], vs[13]);
+			mesh.MakeTriangle(vs[19], vs[13], vs[14]);
+			mesh.MakeTriangle(vs[20], vs[14], vs[15]);
+			mesh.MakeTriangle(vs[21], vs[15], vs[16]);			 
 
 			return mesh;
 		}
@@ -107,7 +100,8 @@ namespace ProcGenEx
 					var key = Tuple.Create(va, vb).Sort();
 					if (!vertices.TryGetValue(key, out vr)) {
 						var v = (mesh.vertices[va] + (mesh.vertices[vb] - mesh.vertices[va]) / 2).normalized;
-						vr = mesh.CreateVertex(v , v);
+						var uv = (mesh.uvs[va] + (mesh.uvs[vb] - mesh.uvs[va]) / 2);
+						vr = mesh.CreateVertex(v , v, uv);
 						vertices.Add(key, vr);
 					}
 					return vr;
