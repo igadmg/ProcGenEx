@@ -7,6 +7,62 @@ using UnityEngineEx;
 
 namespace ProcGenEx
 {
+	public class TriangleGraph
+	{
+		public struct Node
+		{
+			public int i;
+			public List<int> links;
+		}
+
+		Dictionary<int, Node> nodes = new Dictionary<int, Node>();
+
+		public TriangleGraph(List<int> triangles)
+		{
+			var sides = new Dictionary<Tuple<int, int>, List<int>>();
+			Action<Tuple<int, int>, int> sidesIn = (Tuple<int, int> p, int ti) => {
+				List<int> tp;
+				if (!sides.TryGetValue(p.Sort(), out tp)) {
+					tp = new List<int>(2);
+					tp.Add(ti);
+					sides.Add(p.Sort(), tp);
+				}
+				else {
+					tp.Add(ti);
+				}
+			};
+			Action<int, int> nodesIn = (int t0, int t1) => {
+				Node n;
+				if (!nodes.TryGetValue(t0, out n)) {
+					n = new Node();
+					n.i = t0;
+					n.links = new List<int>(3);
+					n.links.Add(t1);
+					nodes.Add(t0, n);
+				}
+				else {
+					n.links.Add(t1);
+					nodes[t0] = n;
+				}
+			};
+			
+			for (int i = 0; i < triangles.Count; i++) {
+				var ta = triangles[i];
+				var tb = triangles[i + 1];
+				var tc = triangles[i + 2];
+
+				sidesIn(Tuple.Create(ta, tb), i);
+				sidesIn(Tuple.Create(tb, tc), i);
+				sidesIn(Tuple.Create(tc, ta), i);
+			}
+
+			foreach (var link in sides.Values) {
+				nodesIn(link[0], link[1]);
+				nodesIn(link[1], link[0]);
+			}
+		}
+	}
+
 	public class MeshBuilder
 	{
 		public List<vec3> vertices = null;
@@ -197,6 +253,11 @@ namespace ProcGenEx
 			uvs.Add(u);
 
 			return vi;
+		}
+
+		public int CopyVertex(int vi)
+		{
+			return CreateVertex(vertices[vi], normals[vi], uvs[vi]);
 		}
 
 		public int CopyVertex(int vi, vec3 dv)
