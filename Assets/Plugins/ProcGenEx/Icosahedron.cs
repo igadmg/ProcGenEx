@@ -31,7 +31,6 @@ namespace ProcGenEx
 			uvy = 2.0f / 3.0f;
 			uvx = 0;
 			sv = new svec3(1.0f, vi, 0);
-			Debug.Log("NORTH {0}".format(sv));
 			for (int i = 0; i < 5; i++, uvx += uvdx, sv.a += da) {
 				vec3 cv = sv.ToVec3().normalized.xzy();
 				vs.Add(mesh.CreateVertex(cv, cv, new vec2(uvx, uvy)));
@@ -43,7 +42,6 @@ namespace ProcGenEx
 			uvy = 1.0f / 3.0f;
 			uvx = uvdx / 2.0f;
 			sv = new svec3(1.0f, 180 * Mathf.Deg2Rad - vi, da / 2.0f);
-			Debug.Log("SOUTH {0}".format(sv));
 			for (int i = 0; i < 5; i++, uvx += uvdx, sv.a += da) {
 				vec3 cv = sv.ToVec3().normalized.xzy();
 				vs.Add(mesh.CreateVertex(cv, cv, new vec2(uvx, uvy)));
