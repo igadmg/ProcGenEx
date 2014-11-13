@@ -385,6 +385,51 @@ namespace ProcGenEx
 			return result.ToArray();
 		}
 
+		public List<int> Select(Plane plane, out List<int> sidea, out List<int> sideb)
+		{
+			sidea = new List<int>(vertices.Count);
+			sideb = new List<int>(vertices.Count);
+
+			for (int i = 0; i < vertices.Count; i++) {
+				if (plane.GetDistanceToPoint(MathEx.Convert.ToVector3(vertices[i])) >= 0) {
+					sidea.Add(i);
+				}
+				else 
+					sideb.Add(i);
+			}
+
+			return sidea;
+		}
+
+		public List<int> Select(ray r, float radius, out List<int> sidea)
+		{
+			sidea = new List<int>(vertices.Count);
+			
+			for (int i = 0; i < vertices.Count; i++) {
+				if (r.distance(vertices[i]) < radius) {
+					sidea.Add(i);
+				}
+			}
+
+			return sidea;
+		}
+
+		public List<int> Select(ray r, float radius, out List<int> sidea, out List<int> sideb)
+		{
+			sidea = new List<int>(vertices.Count);
+			sideb = new List<int>(vertices.Count);
+
+			for (int i = 0; i < vertices.Count; i++) {
+				if (r.distance(vertices[i]) < radius) {
+					sidea.Add(i);
+				}
+				else 
+					sideb.Add(i);
+			}
+
+			return sidea;
+		}
+
 		public int[] Project(Plane plane)
 		{
 			List<int> contour = new List<int>();

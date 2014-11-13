@@ -15,8 +15,8 @@ namespace ProcGenEx
 			MeshBuilder mesh = new MeshBuilder(22, 20);
 			List<int> vs = new List<int>(22);
 
-			vec3 north = vec3.up;
-			vec3 south = vec3.down;
+			vec3 north = vec3.up / 2.0f;
+			vec3 south = vec3.down / 2.0f;
 			float vi = 90 * Mathf.Deg2Rad - Mathf.Atan(0.5f);
 			float da = 72 * Mathf.Deg2Rad;			
 			float uvx = 0, uvy = 0;
@@ -30,23 +30,23 @@ namespace ProcGenEx
 
 			uvy = 2.0f / 3.0f;
 			uvx = 0;
-			sv = new svec3(1.0f, vi, 0);
+			sv = new svec3(1.0f / 2.0f, vi, 0);
 			for (int i = 0; i < 5; i++, uvx += uvdx, sv.a += da) {
-				vec3 cv = sv.ToVec3().normalized.xzy();
+				vec3 cv = sv.ToVec3().normalized.xzy() / 2.0f;
 				vs.Add(mesh.CreateVertex(cv, cv, new vec2(uvx, uvy)));
 			} {
-				vec3 cv = sv.ToVec3().normalized.xzy();
+				vec3 cv = sv.ToVec3().normalized.xzy() / 2.0f;
 				vs.Add(mesh.CreateVertex(cv, cv, new vec2(uvx, uvy)));
 			}
 
 			uvy = 1.0f / 3.0f;
 			uvx = uvdx / 2.0f;
-			sv = new svec3(1.0f, 180 * Mathf.Deg2Rad - vi, da / 2.0f);
+			sv = new svec3(1.0f / 2.0f, 180 * Mathf.Deg2Rad - vi, da / 2.0f);
 			for (int i = 0; i < 5; i++, uvx += uvdx, sv.a += da) {
-				vec3 cv = sv.ToVec3().normalized.xzy();
+				vec3 cv = sv.ToVec3().normalized.xzy() / 2.0f;
 				vs.Add(mesh.CreateVertex(cv, cv, new vec2(uvx, uvy)));
 			} {
-				vec3 cv = sv.ToVec3().normalized.xzy();
+				vec3 cv = sv.ToVec3().normalized.xzy() / 2.0f;
 				vs.Add(mesh.CreateVertex(cv, cv, new vec2(uvx, uvy)));
 			}
 
@@ -97,7 +97,7 @@ namespace ProcGenEx
 					int vr;
 					var key = Tuple.Create(va, vb).Sort();
 					if (!vertices.TryGetValue(key, out vr)) {
-						var v = (mesh.vertices[va] + (mesh.vertices[vb] - mesh.vertices[va]) / 2).normalized;
+						var v = (mesh.vertices[va] + (mesh.vertices[vb] - mesh.vertices[va]) / 2).normalized / 2.0f;
 						var uv = (mesh.uvs[va] + (mesh.uvs[vb] - mesh.uvs[va]) / 2);
 						vr = mesh.CreateVertex(v , v, uv);
 						vertices.Add(key, vr);

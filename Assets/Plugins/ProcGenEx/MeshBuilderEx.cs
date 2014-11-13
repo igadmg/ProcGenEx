@@ -43,5 +43,13 @@ namespace ProcGenEx
 
 			return mb;
 		}
+
+		public static MeshBuilder Extrude(this MeshBuilder mb, ray r, float radius, vec3 force)
+		{
+			List<int> inside =
+			mb.Select(r, radius, out inside);
+
+			return mb;
+		}
 	}
 }
