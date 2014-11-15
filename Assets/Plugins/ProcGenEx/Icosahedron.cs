@@ -10,6 +10,60 @@ namespace ProcGenEx
 {
 	public class Icosahedron
 	{
+		public static MeshBuilder CreateSimple()
+		{
+			MeshBuilder mesh = new MeshBuilder(12, 20);
+			List<int> vs = new List<int>(12);
+
+			vec3 north = vec3.up / 2.0f;
+			vec3 south = vec3.down / 2.0f;
+			float vi = 90 * Mathf.Deg2Rad - Mathf.Atan(0.5f);
+			float da = 72 * Mathf.Deg2Rad;
+			svec3 sv;
+
+			vs.Add(mesh.CreateVertex(north, north));
+
+			sv = new svec3(1.0f / 2.0f, vi, 0);
+			for (int i = 0; i < 5; i++, sv.a += da) {
+				vec3 cv = sv.ToVec3().normalized.xzy() / 2.0f;
+				vs.Add(mesh.CreateVertex(cv, cv));
+			}
+
+			sv = new svec3(1.0f / 2.0f, 180 * Mathf.Deg2Rad - vi, da / 2.0f);
+			for (int i = 0; i < 5; i++, sv.a += da) {
+				vec3 cv = sv.ToVec3().normalized.xzy() / 2.0f;
+				vs.Add(mesh.CreateVertex(cv, cv));
+			}
+
+			vs.Add(mesh.CreateVertex(south, south));
+
+			mesh.MakeTriangle(vs[0], vs[2], vs[1]);
+			mesh.MakeTriangle(vs[0], vs[3], vs[2]);
+			mesh.MakeTriangle(vs[0], vs[4], vs[3]);
+			mesh.MakeTriangle(vs[0], vs[5], vs[4]);
+			mesh.MakeTriangle(vs[0], vs[1], vs[5]);
+
+			mesh.MakeTriangle(vs[2], vs[6], vs[1]);
+			mesh.MakeTriangle(vs[3], vs[7], vs[2]);
+			mesh.MakeTriangle(vs[4], vs[8], vs[3]);
+			mesh.MakeTriangle(vs[5], vs[9], vs[4]);
+			mesh.MakeTriangle(vs[1], vs[10], vs[5]);
+
+			mesh.MakeTriangle(vs[6], vs[2], vs[7]);
+			mesh.MakeTriangle(vs[7], vs[3], vs[8]);
+			mesh.MakeTriangle(vs[8], vs[4], vs[9]);
+			mesh.MakeTriangle(vs[9], vs[5], vs[10]);
+			mesh.MakeTriangle(vs[10], vs[1], vs[6]);
+
+			mesh.MakeTriangle(vs[11], vs[6], vs[7]);
+			mesh.MakeTriangle(vs[11], vs[7], vs[8]);
+			mesh.MakeTriangle(vs[11], vs[8], vs[9]);
+			mesh.MakeTriangle(vs[11], vs[9], vs[10]);
+			mesh.MakeTriangle(vs[11], vs[10], vs[6]);
+
+			return mesh;
+		}
+
 		public static MeshBuilder Create()
 		{
 			MeshBuilder mesh = new MeshBuilder(22, 20);
