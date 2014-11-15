@@ -51,5 +51,18 @@ namespace ProcGenEx
 
 			return mb;
 		}
+
+		public static MeshBuilder Noize(this MeshBuilder mb, float random, float noiseDensity = 2f, float scale = .75f)
+		{
+			for (int i = 0; i < mb.vertices.Count; i++) {
+				vec3 v = mb.vertices[i];
+				v.Mul(new vec3(noiseDensity, noiseDensity, noiseDensity));
+				float noise1 = Noise.GetOctaveNoise(v.x + random, v.y + random, v.z + random, 4) * scale;
+				float factor = 1f - (scale / 2f) + noise1;
+				mb.vertices[i] = mb.vertices[i].Mul(new vec3(factor, factor, factor));
+			}
+
+			return mb;
+		}
 	}
 }
