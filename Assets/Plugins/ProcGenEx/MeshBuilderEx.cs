@@ -64,5 +64,17 @@ namespace ProcGenEx
 
 			return mb;
 		}
+
+		public static float Radius(this MeshBuilder mb)
+		{
+			float r = 0;
+			for (int i = 0; i < mb.vertices.Count; i++) {
+				float vm = mb.vertices[i].magnitude;
+				if (r < vm)
+					r = vm;
+			}
+
+			return Mathf.Sqrt(r);
+		}
 	}
 }
