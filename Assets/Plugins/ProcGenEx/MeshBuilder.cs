@@ -102,6 +102,31 @@ namespace ProcGenEx
 			triangles.Capacity = dtc;
 		}
 
+		public void RecodeVertices(List<int> newVertexIndices)
+		{
+			if (newVertexIndices.Count != vertices.Count) {
+				return;
+			}
+
+			List<vec3> nvertices = new List<vec3>(new vec3[vertices.Count]);
+			List<vec3> nnormals = new List<vec3>(new vec3[vertices.Count]);
+			List<vec2> nuvs = new List<vec2>(new vec2[vertices.Count]);
+
+			for (int i = 0; i < vertices.Count; i++) {
+				nvertices[newVertexIndices[i]] = vertices[i];
+				nnormals[newVertexIndices[i]] = normals[i];
+				nuvs[newVertexIndices[i]] = uvs[i];
+			}
+			vertices = nvertices;
+			normals = nnormals;
+			nuvs = uvs;
+
+			for (int i = 0; i < triangles.Count; i++) {
+				triangles[i] = newVertexIndices[i];
+			}
+
+		}
+
 #region Simple figures
 
 		public int[] AddTriangle(vec3 a, vec3 b, vec3 c)

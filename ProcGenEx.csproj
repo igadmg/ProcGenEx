@@ -36,11 +36,12 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
     <Reference Include="UnityEngine">
-      <HintPath>C:\Program Files (x86)\Unity\Editor\Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>E:\Program Files (x86)\Unity\Editor\Data\Managed\UnityEngine.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Plugins\ProcGenEx\Icosahedron - Copy.cs" />
     <Compile Include="Assets\Plugins\ProcGenEx\MeshBuilder.cs" />
     <Compile Include="Assets\Plugins\ProcGenEx\Icosahedron.cs" />
     <Compile Include="Assets\Plugins\ProcGenEx\MeshBuilderEx.cs" />

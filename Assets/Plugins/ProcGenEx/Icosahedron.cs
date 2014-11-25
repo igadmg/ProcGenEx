@@ -68,6 +68,9 @@ namespace ProcGenEx
 		{
 			MeshBuilder mesh = new MeshBuilder(22, 20);
 			List<int> vs = new List<int>(22);
+			List<int> polarvs = new List<int>();
+			List<int> edgevs = new List<int>();
+			List<int> commonvs = new List<int>();
 
 			vec3 north = vec3.up / 2.0f;
 			vec3 south = vec3.down / 2.0f;
@@ -88,7 +91,8 @@ namespace ProcGenEx
 			for (int i = 0; i < 5; i++, uvx += uvdx, sv.a += da) {
 				vec3 cv = sv.ToVec3().normalized.xzy() / 2.0f;
 				vs.Add(mesh.CreateVertex(cv, cv, new vec2(uvx, uvy)));
-			} {
+			}
+			{
 				vec3 cv = sv.ToVec3().normalized.xzy() / 2.0f;
 				vs.Add(mesh.CreateVertex(cv, cv, new vec2(uvx, uvy)));
 			}
@@ -99,7 +103,8 @@ namespace ProcGenEx
 			for (int i = 0; i < 5; i++, uvx += uvdx, sv.a += da) {
 				vec3 cv = sv.ToVec3().normalized.xzy() / 2.0f;
 				vs.Add(mesh.CreateVertex(cv, cv, new vec2(uvx, uvy)));
-			} {
+			}
+			{
 				vec3 cv = sv.ToVec3().normalized.xzy() / 2.0f;
 				vs.Add(mesh.CreateVertex(cv, cv, new vec2(uvx, uvy)));
 			}
@@ -136,6 +141,18 @@ namespace ProcGenEx
 			return mesh;
 		}
 
+		static vec2 slerp(vec2 a, vec2 b, float t)
+		{
+			float d = a * b;
+
+			d = Mathf.Clamp(d, -1, 1);
+
+			float theta = Mathf.Acos(d) * t;
+			var r = (b - a * d).normalized;
+
+			return ((a * Mathf.Cos(theta)) + (r * Mathf.Sin(theta)));
+		}
+
 		public static MeshBuilder Subdivide(MeshBuilder mesh)
 		{
 			Dictionary<Tuple<int, int>, int> vertices = new Dictionary<Tuple<int,int>, int>();
@@ -152,7 +169,7 @@ namespace ProcGenEx
 					var key = Tuple.Create(va, vb).Sort();
 					if (!vertices.TryGetValue(key, out vr)) {
 						var v = (mesh.vertices[va] + (mesh.vertices[vb] - mesh.vertices[va]) / 2).normalized / 2.0f;
-						var uv = (mesh.uvs[va] + (mesh.uvs[vb] - mesh.uvs[va]) / 2);
+						var uv =  (mesh.uvs[va] + (mesh.uvs[vb] - mesh.uvs[va]) / 2);
 						vr = mesh.CreateVertex(v , v, uv);
 						vertices.Add(key, vr);
 					}
@@ -169,6 +186,31 @@ namespace ProcGenEx
 				mesh.MakeTriangle(ta, td, tf);
 				mesh.MakeTriangle(tb, te, td);
 				mesh.MakeTriangle(tc, tf, te);
+			}
+
+			return mesh;
+		}
+
+		public static MeshBuilder UpdateUV(MeshBuilder mesh)
+		{
+			for (int i = 0; i < mesh.vertices.Count; i++) {
+				var v = mesh.vertices[i];
+
+				if (v.y == 0.5f || v.y == -0.5f)
+					continue;
+
+				svec3 uv = (svec3)v.xzy();
+				vec2 textureCoordinates;
+				textureCoordinates.x = uv.a / (2.0f * Mathf.PI);
+				if (textureCoordinates.x < 0f) {
+					textureCoordinates.x += 1f;
+				}
+				if ((mesh.uvs[i].x - textureCoordinates.x) > 0.5f) { // hehehehe
+					textureCoordinates.x += 1f;
+				}
+				//textureCoordinates.y = uv.i / Mathf.PI;
+				textureCoordinates.y = Mathf.Asin(2 * v.y) / Mathf.PI + 0.5f;
+				mesh.uvs[i] = textureCoordinates;
 			}
 
 			return mesh;
