@@ -70,6 +70,11 @@ namespace ProcGenEx
 		public List<vec2> uvs = null;
 		public List<int> triangles = null;
 
+		public MeshBuilder()
+			: this(0, 0)
+		{
+		}
+
 		public MeshBuilder(int VertexCount, int TriangleCount)
 		{
 			vertices = new List<vec3>(VertexCount);
@@ -223,12 +228,12 @@ namespace ProcGenEx
 			return result;
 		}
 
-		public int[] AddPlane(Plane p, vec3 origin, vec2 size, vec2i step)
+		public int[] AddPlane(plane p, vec3 origin, vec2 size, vec2i step)
 		{
 			return AddPlane(p, origin, size, step, vec3.forward);
 		}
 
-		public int[] AddPlane(Plane p, vec3 origin, vec2 size, vec2i step, vec3 forward)
+		public int[] AddPlane(plane p, vec3 origin, vec2 size, vec2i step, vec3 forward)
 		{
 			var n = MathEx.Convert.ToVec3(p.normal);
 			vec3 right = vec3.Cross(n, forward);
@@ -262,7 +267,58 @@ namespace ProcGenEx
 			return result;
 		}
 
-#endregion
+		public int[] AddStripe(curve<vec3> c, float width, vec3 up)
+		{
+			return AddStripe(c, width, up, 0, c.numberOfNodes, 1.0f);
+		}
+
+		public int[] AddStripe(curve<vec3> c, float width, vec3 up, int startNode, int endNode, float stepMultiplier)
+		{
+			List<int> result = new List<int>();
+			float halfwidth = width / 2;
+
+			float sl = c.length;
+			result.Capacity = (int)(sl / 0.01f * 2 / stepMultiplier);
+
+			float t = 0;
+			while (true)
+			{
+				vec3 p = c.value(t);
+				vec3 v = c.velocity(t);
+				float dt = v.length / sl / sl;
+
+				vec3 forward = v.normalized;
+				vec3 right = (forward % up).normalized;
+				up = (right % v).normalized;
+
+				if (t == 0)
+				{
+					Grow(2, 0);
+
+					result.Add(CreateVertex(p + right * halfwidth, up));
+					result.Add(CreateVertex(p - right * halfwidth, up));
+				}
+				else
+				{
+					Grow(2, 2);
+
+					result.Add(CreateVertex(p + right * halfwidth, up));
+					MakeTriangle(result[result.Count - 2], result[result.Count - 3], result[result.Count - 1]);
+
+					result.Add(CreateVertex(p - right * halfwidth, up));
+					MakeTriangle(result[result.Count - 3], result[result.Count - 2], result[result.Count - 1]);
+				}
+
+				if (t == 1)
+					break;
+
+				t = Mathf.Clamp01(t + dt);
+			}
+
+			return result.ToArray();
+		}
+
+		#endregion
 
 		public int CreateVertex(vec3 v, vec3 n)
 		{
