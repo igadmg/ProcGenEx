@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;UNITY_STANDALONE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -26,7 +26,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;UNITY_STANDALONE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -36,34 +36,33 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
     <Reference Include="UnityEngine">
-      <HintPath>E:\Program Files (x86)\Unity\Editor\Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>$(UNITYEDITOR_PATH)\Data\Managed\UnityEngine.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Plugins\ProcGenEx\Icosahedron - Copy.cs" />
-    <Compile Include="Assets\Plugins\ProcGenEx\MeshBuilder.cs" />
-    <Compile Include="Assets\Plugins\ProcGenEx\Icosahedron.cs" />
-    <Compile Include="Assets\Plugins\ProcGenEx\MeshBuilderEx.cs" />
+    <Compile Include="src\MeshBuilder.cs" />
+    <Compile Include="src\Icosahedron.cs" />
+    <Compile Include="src\MeshBuilderEx.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MathEx\MathEx.csproj">
+    <ProjectReference Include="$(SolutionDir)Libraries\MathEx\MathEx.csproj">
       <Project>{8d8a06e5-abfb-49a8-851a-070fcf5339aa}</Project>
       <Name>MathEx</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\MathEx\MathEx.UnityEngine.csproj">
+    <ProjectReference Include="$(SolutionDir)Libraries\MathEx\MathEx.UnityEngine.csproj">
       <Project>{d707c31e-1c84-42a1-9790-3ebbf75ea645}</Project>
       <Name>MathEx.UnityEngine</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\SystemEx\SystemEx.csproj">
+    <ProjectReference Include="$(SolutionDir)Libraries\SystemEx\SystemEx.csproj">
       <Project>{0271e27f-e614-4b0f-af16-05d2d2781b7f}</Project>
       <Name>SystemEx</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\UnityEngineEx\UnityEngineEx.csproj">
+    <ProjectReference Include="$(SolutionDir)Libraries\UnityEngineEx\UnityEngineEx.csproj">
       <Project>{5ddef78f-3298-4583-adf8-21421e4b29f9}</Project>
       <Name>UnityEngineEx</Name>
       <Private>False</Private>

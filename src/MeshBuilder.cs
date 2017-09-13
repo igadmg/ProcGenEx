@@ -376,21 +376,21 @@ namespace ProcGenEx
 					nvs.Add(v2v[ts[i]]);
 				}
 				if (abi && (abd > 0 && abd < 1)) {
-					nvs.Add(CreateVertex(ab, MathEx.MathEx.Slerp(ns[ts[i]], ns[ts[i + 1]], abd)));
+					nvs.Add(CreateVertex(ab, abd.Slerp(ns[ts[i]], ns[ts[i + 1]])));
 				}
 
 				if (!(v2v[ts[i + 1]] < 0)) {
 					nvs.Add(v2v[ts[i + 1]]);
 				}
 				if (bci && (bcd > 0 && bcd < 1)) {
-					nvs.Add(CreateVertex(bc, MathEx.MathEx.Slerp(ns[ts[i + 1]], ns[ts[i + 2]], bcd)));
+					nvs.Add(CreateVertex(bc, bcd.Slerp(ns[ts[i + 1]], ns[ts[i + 2]])));
 				}
 
 				if (!(v2v[ts[i + 2]] < 0)) {
 					nvs.Add(v2v[ts[i + 2]]);
 				}
 				if (cai && (cad > 0 && cad < 1)) {
-					nvs.Add(CreateVertex(ca, MathEx.MathEx.Slerp(ns[ts[i + 2]], ns[ts[i]], cad)));
+					nvs.Add(CreateVertex(ca, cad.Slerp(ns[ts[i + 2]], ns[ts[i]])));
 				}
 
 				MakeFan(nvs.ToArray());

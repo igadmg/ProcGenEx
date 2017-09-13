@@ -141,18 +141,6 @@ namespace ProcGenEx
 			return mesh;
 		}
 
-		static vec2 slerp(vec2 a, vec2 b, float t)
-		{
-			float d = a * b;
-
-			d = Mathf.Clamp(d, -1, 1);
-
-			float theta = Mathf.Acos(d) * t;
-			var r = (b - a * d).normalized;
-
-			return ((a * Mathf.Cos(theta)) + (r * Mathf.Sin(theta)));
-		}
-
 		public static MeshBuilder Subdivide(MeshBuilder mesh)
 		{
 			Dictionary<Tuple<int, int>, int> vertices = new Dictionary<Tuple<int,int>, int>();

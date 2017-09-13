@@ -1,9 +1,6 @@
-﻿using System;
+﻿using MathEx;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
-using MathEx;
 
 namespace ProcGenEx
 {
