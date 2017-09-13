@@ -278,6 +278,7 @@ namespace ProcGenEx
 			float halfwidth = width / 2;
 
 			float sl = c.length;
+			float islsl = stepMultiplier / (sl * sl);
 			result.Capacity = (int)(sl / 0.01f * 2 / stepMultiplier);
 
 			float t = 0;
@@ -285,7 +286,7 @@ namespace ProcGenEx
 			{
 				vec3 p = c.value(t);
 				vec3 v = c.velocity(t);
-				float dt = v.length / sl / sl;
+				float dt = Mathf.Clamp(v.length * islsl, islsl, 1);
 
 				vec3 forward = v.normalized;
 				vec3 right = (forward % up).normalized;
