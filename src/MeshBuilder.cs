@@ -269,10 +269,12 @@ namespace ProcGenEx
 
 		public int[] AddStripe(curve<vec3> c, float width, vec3 up)
 		{
-			return AddStripe(c, width, up, 0, c.numberOfNodes, 1.0f);
+			return AddStripe(c, width
+				, new Tuple<float, vec3>[] { Tuple.Create(0f, up), Tuple.Create(1f, up) }, Easing.makeEaseMirror(Easing.easeExpoOut)
+				, 0, c.numberOfNodes, 1.0f);
 		}
 
-		public int[] AddStripe(curve<vec3> c, float width, vec3 up, int startNode, int endNode, float stepMultiplier)
+		public int[] AddStripe(curve<vec3> c, float width, Tuple<float, vec3>[] ups, Func<float, float> upEaseFn, int startNode, int endNode, float stepMultiplier)
 		{
 			List<int> result = new List<int>();
 			float halfwidth = width / 2;
@@ -282,12 +284,18 @@ namespace ProcGenEx
 			result.Capacity = (int)(sl / 0.01f * 2 / stepMultiplier);
 
 			float t = 0;
+			int upi = 0;
+			vec3 up = ups[upi].Item2;
 			while (true)
 			{
 				vec3 p = c.value(t);
 				vec3 v = c.velocity(t);
 				float dt = Mathf.Clamp(v.length * islsl, islsl, 1);
 
+				float upa = t.InvLerp(ups[upi].Item1, ups[upi + 1].Item1);
+				vec3 nup = upa.Lerp(ups[upi].Item2, ups[upi + 1].Item2);
+
+				up = (1 - upEaseFn(upa)).Lerp(up, nup);
 				vec3 forward = v.normalized;
 				vec3 right = (forward % up).normalized;
 				up = (right % v).normalized;
