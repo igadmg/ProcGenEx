@@ -269,59 +269,53 @@ namespace ProcGenEx
 
 		public int[] AddStripe(curve<vec3> c, float width, vec3 up)
 		{
-			return AddStripe(c, width
-				, new Tuple<float, vec3>[] { Tuple.Create(0f, up), Tuple.Create(1f, up) }, Easing.makeEaseMirror(Easing.easeExpoOut)
-				, 0, c.numberOfNodes, 1.0f);
+			return AddStripe(c, new vec2(-width / 2f, width / 2f), up);
 		}
 
-		public int[] AddStripe(curve<vec3> c, float width, Tuple<float, vec3>[] ups, Func<float, float> upEaseFn, int startNode, int endNode, float stepMultiplier)
+		public int[] AddStripe(curve<vec3> c, vec2 width, vec3 up)
+		{
+			return AddStripe(c, width
+				, new Tuple<float, vec3>[] { Tuple.Create(0f, up), Tuple.Create(1f, up) }, Easing.makeEaseMirror(Easing.easeExpoOut)
+				, 0, c.numberOfNodes, 1f);
+		}
+
+		public int[] AddStripe(curve<vec3> c, vec2 width, Tuple<float, vec3>[] ups, Func<float, float> upEaseFn, int startNode, int endNode, float stepMultiplier)
 		{
 			List<int> result = new List<int>();
-			float halfwidth = width / 2;
 
 			float sl = c.length;
 			float islsl = stepMultiplier / (sl * sl);
 			result.Capacity = (int)(sl / 0.01f * 2 / stepMultiplier);
 
-			float t = 0;
 			int upi = 0;
 			vec3 up = ups[upi].Item2;
-			while (true)
+			foreach (var i in c.Iterate(stepMultiplier))
 			{
-				vec3 p = c.value(t);
-				vec3 v = c.velocity(t);
-				float dt = Mathf.Clamp(v.length * islsl, islsl, 1);
-
-				float upa = t.InvLerp(ups[upi].Item1, ups[upi + 1].Item1);
+				float upa = i.t.InvLerp(ups[upi].Item1, ups[upi + 1].Item1);
 				vec3 nup = upa.Lerp(ups[upi].Item2, ups[upi + 1].Item2);
 
 				up = (1 - upEaseFn(upa)).Lerp(up, nup);
-				vec3 forward = v.normalized;
-				vec3 right = (forward % up).normalized;
-				up = (right % v).normalized;
+				vec3 forward = i.velocity.normalized;
+				vec3 right = (up % forward).normalized;
+				up = (i.velocity % right).normalized;
 
-				if (t == 0)
+				if (i.t == 0)
 				{
 					Grow(2, 0);
 
-					result.Add(CreateVertex(p + right * halfwidth, up));
-					result.Add(CreateVertex(p - right * halfwidth, up));
+					result.Add(CreateVertex(i.value + right * width.x, up));
+					result.Add(CreateVertex(i.value + right * width.y, up));
 				}
 				else
 				{
 					Grow(2, 2);
 
-					result.Add(CreateVertex(p + right * halfwidth, up));
-					MakeTriangle(result[result.Count - 2], result[result.Count - 3], result[result.Count - 1]);
-
-					result.Add(CreateVertex(p - right * halfwidth, up));
+					result.Add(CreateVertex(i.value + right * width.x, up));
 					MakeTriangle(result[result.Count - 3], result[result.Count - 2], result[result.Count - 1]);
+
+					result.Add(CreateVertex(i.value + right * width.y, up));
+					MakeTriangle(result[result.Count - 2], result[result.Count - 3], result[result.Count - 1]);
 				}
-
-				if (t == 1)
-					break;
-
-				t = Mathf.Clamp01(t + dt);
 			}
 
 			return result.ToArray();
