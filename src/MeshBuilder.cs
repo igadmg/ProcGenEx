@@ -279,6 +279,13 @@ namespace ProcGenEx
 				, 0, c.numberOfNodes, 1f);
 		}
 
+		public int[] AddStripe(curve<vec3> c, vec2 width, vec3 up, float stepMultiplier)
+		{
+			return AddStripe(c, width
+				, new Tuple<float, vec3>[] { Tuple.Create(0f, up), Tuple.Create(1f, up) }, Easing.makeEaseMirror(Easing.easeExpoOut)
+				, 0, c.numberOfNodes, stepMultiplier);
+		}
+
 		public int[] AddStripe(curve<vec3> c, vec2 width, Tuple<float, vec3>[] ups, Func<float, float> upEaseFn, int startNode, int endNode, float stepMultiplier)
 		{
 			List<int> result = new List<int>();
