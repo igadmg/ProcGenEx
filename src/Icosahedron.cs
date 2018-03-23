@@ -75,7 +75,7 @@ namespace ProcGenEx
 			vec3 north = vec3.up / 2.0f;
 			vec3 south = vec3.down / 2.0f;
 			float vi = 90 * Mathf.Deg2Rad - Mathf.Atan(0.5f);
-			float da = 72 * Mathf.Deg2Rad;			
+			float da = 72 * Mathf.Deg2Rad;
 			float uvx = 0, uvy = 0;
 			svec3 sv;
 
@@ -131,12 +131,12 @@ namespace ProcGenEx
 			mesh.MakeTriangle(vs[13], vs[8], vs[14]);
 			mesh.MakeTriangle(vs[14], vs[9], vs[15]);
 			mesh.MakeTriangle(vs[15], vs[10], vs[16]);
-			
+
 			mesh.MakeTriangle(vs[17], vs[11], vs[12]);
 			mesh.MakeTriangle(vs[18], vs[12], vs[13]);
 			mesh.MakeTriangle(vs[19], vs[13], vs[14]);
 			mesh.MakeTriangle(vs[20], vs[14], vs[15]);
-			mesh.MakeTriangle(vs[21], vs[15], vs[16]);			 
+			mesh.MakeTriangle(vs[21], vs[15], vs[16]);
 
 			return mesh;
 		}

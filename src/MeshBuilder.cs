@@ -45,7 +45,7 @@ namespace ProcGenEx
 					nodes[t0] = n;
 				}
 			};
-			
+
 			for (int i = 0; i < triangles.Count; i++) {
 				var ta = triangles[i];
 				var tb = triangles[i + 1];
@@ -93,7 +93,7 @@ namespace ProcGenEx
 			m.triangles = triangles.ToArray();
 
 			m.Apply();
-			
+
 			return m;
 		}
 
@@ -141,7 +141,7 @@ namespace ProcGenEx
 		}
 
 		public int[] AddTriangle(vec3 a, vec3 b, vec3 c, ref int[] result)
-		{		
+		{
 			if (result == null)
 				result = new int[3];
 
@@ -167,7 +167,7 @@ namespace ProcGenEx
 		{
 			if (result == null)
 				result = new int[3];
-			
+
 			var n = vec3.Cross((v[2] - v[0]), (v[0] - v[1])).normalized;
 
 			Grow(3, 1);
@@ -176,7 +176,7 @@ namespace ProcGenEx
 			result[2] = CreateVertex(v[2], n, uv[2]);
 
 			MakeTriangle(result[0], result[1], result[2]);
-			
+
 			return result;
 		}
 
@@ -190,7 +190,7 @@ namespace ProcGenEx
 		{
 			if (result == null)
 				result = new int[4];
-			
+
 			var n = vec3.Cross((c - a), (a - b)).normalized;
 
 			Grow(4, 2);
@@ -200,7 +200,7 @@ namespace ProcGenEx
 			result[3] = CreateVertex(d, n);
 
 			MakeQuad(result[0], result[1], result[2], result[3]);
-			
+
 			return result;
 		}
 
@@ -214,7 +214,7 @@ namespace ProcGenEx
 		{
 			if (result == null)
 				result = new int[4];
-			
+
 			var n = vec3.Cross((v[2] - v[0]), (v[0] - v[1])).normalized;
 
 			Grow(4, 2);
@@ -224,7 +224,7 @@ namespace ProcGenEx
 			result[3] = CreateVertex(v[3], n, uv[3]);
 
 			MakeQuad(result[0], result[1], result[2], result[3]);
-			
+
 			return result;
 		}
 
@@ -251,7 +251,7 @@ namespace ProcGenEx
 			vec3 v;
 			for (int i = 0; i < cn; i++) {
 				v = origin + i * right * dv.x;
-				for (int j = 0; j < rn; j++, v += forward * dv.y) {					
+				for (int j = 0; j < rn; j++, v += forward * dv.y) {
 					result[ri++] = CreateVertex(v, n);
 				}
 			}
@@ -358,7 +358,7 @@ namespace ProcGenEx
 
 		public void MakeTriangle(int a, int b, int c)
 		{
-			var ti = triangles.Count;			
+			var ti = triangles.Count;
 
 			triangles.Add(a);
 			triangles.Add(b);
@@ -414,14 +414,14 @@ namespace ProcGenEx
 
 			for (int i = 0; i < vs.Count; i++) {
 				if (plane.GetDistanceToPoint(MathEx.Convert.ToVector3(vs[i])) >= 0) {
-					v2v[i] = CreateVertex(vs[i], ns[i], us[i]);					
+					v2v[i] = CreateVertex(vs[i], ns[i], us[i]);
 				}
 			}
 
 
 			for (int i = 0; i < ts.Count; i += 3) {
 				int st = ((v2v[ts[i]] < 0 ? 0 : 1) << 0) + ((v2v[ts[i + 1]] < 0 ? 0 : 1) << 1) + ((v2v[ts[i + 2]] < 0 ? 0 : 1) << 2);
-				
+
 				if (st == 0)
 					continue;
 				if (st == 7) {
@@ -485,7 +485,7 @@ namespace ProcGenEx
 				if (plane.GetDistanceToPoint(MathEx.Convert.ToVector3(vertices[i])) >= 0) {
 					sidea.Add(i);
 				}
-				else 
+				else
 					sideb.Add(i);
 			}
 
@@ -495,7 +495,7 @@ namespace ProcGenEx
 		public List<int> Select(ray r, float radius, out List<int> sidea)
 		{
 			sidea = new List<int>(vertices.Count);
-			
+
 			for (int i = 0; i < vertices.Count; i++) {
 				if (r.distance(vertices[i]) < radius) {
 					sidea.Add(i);
@@ -514,7 +514,7 @@ namespace ProcGenEx
 				if (r.distance(vertices[i]) < radius) {
 					sidea.Add(i);
 				}
-				else 
+				else
 					sideb.Add(i);
 			}
 
