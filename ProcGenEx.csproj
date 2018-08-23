@@ -67,22 +67,22 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)Libraries\MathEx\MathEx.csproj">
+    <ProjectReference Include="$(SolutionDir)\Libraries\MathEx\MathEx.csproj">
       <Project>{8d8a06e5-abfb-49a8-851a-070fcf5339aa}</Project>
       <Name>MathEx</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Libraries\MathEx\MathEx.UnityEngine.csproj">
+    <ProjectReference Include="$(SolutionDir)\Libraries\MathEx\MathEx.UnityEngine.csproj">
       <Project>{d707c31e-1c84-42a1-9790-3ebbf75ea645}</Project>
       <Name>MathEx.UnityEngine</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Libraries\SystemEx\SystemEx.csproj">
+    <ProjectReference Include="$(SolutionDir)\Libraries\SystemEx\SystemEx.csproj">
       <Project>{0271e27f-e614-4b0f-af16-05d2d2781b7f}</Project>
       <Name>SystemEx</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)Libraries\UnityEngineEx\UnityEngineEx.csproj">
+    <ProjectReference Include="$(SolutionDir)\Libraries\UnityEngineEx\UnityEngineEx.csproj">
       <Project>{E323793C-989D-4E1E-8F78-96C6D5ED6CAA}</Project>
       <Name>UnityEngineEx</Name>
       <Private>False</Private>
