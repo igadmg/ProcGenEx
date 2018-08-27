@@ -1,0 +1,14 @@
+{
+    "name": "ProcGenEx",
+    "references": [
+        "MathEx",
+        "MathEx.UnityEngine",
+        "SystemEx",
+        "UnityDissolve",
+        "UnityEngineEx"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true
+}
