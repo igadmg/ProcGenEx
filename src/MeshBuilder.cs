@@ -267,7 +267,7 @@ namespace ProcGenEx
 			return result;
 		}
 
-		public int[] AddPlane(IEnumerator<Tuple<vec3, vec3>> vertices, vec2i step)
+		public int[] AddPlane(IEnumerator<Tuple<vec3, vec3>> vertices, vec2i step, bool revert = false)
 		{
 			int cn = step.x + 1;
 			int rn = step.y + 1;
@@ -302,7 +302,10 @@ namespace ProcGenEx
 				if (((vi + 1) % rn) == 0)
 					vi++;
 
-				MakeQuad(result[vi + 0], result[vi + 1], result[vi + 1 + rn], result[vi + 0 + rn]);
+				if (!revert)
+					MakeQuad(result[vi + 0], result[vi + 1], result[vi + 1 + rn], result[vi + 0 + rn]);
+				else
+					MakeQuad(result[vi + 1 + rn], result[vi + 1], result[vi + 0], result[vi + 0 + rn]);
 			}
 
 			return result;
