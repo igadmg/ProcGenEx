@@ -267,6 +267,47 @@ namespace ProcGenEx
 			return result;
 		}
 
+		public int[] AddPlane(IEnumerator<Tuple<vec3, vec3>> vertices, vec2i step)
+		{
+			int cn = step.x + 1;
+			int rn = step.y + 1;
+			int vn = cn * rn;
+			int tn = step.x * step.y * 2;
+			
+			int[] result = new int[vn];
+
+			Grow(vn, tn);
+
+			int ri = 0;
+			int i = 0;
+			int j = 0;
+			while (vertices.MoveNext())
+			{
+				var v = vertices.Current;
+				result[ri++] = CreateVertex(v.Item1, v.Item2);
+
+				j++;
+				if (j == rn)
+				{
+					i++;
+					j = 0;
+					if (i == cn)
+						break;
+				}
+			}
+
+			int vi = 0;
+			for (i = 0; i < tn / 2; i++, vi++)
+			{
+				if (((vi + 1) % rn) == 0)
+					vi++;
+
+				MakeQuad(result[vi + 0], result[vi + 1], result[vi + 1 + rn], result[vi + 0 + rn]);
+			}
+
+			return result;
+		}
+
 		public int[] AddStripe(curve<vec3> c, float width, vec3 up)
 		{
 			return AddStripe(c, new vec2(-width / 2f, width / 2f), up);
