@@ -565,6 +565,29 @@ namespace ProcGenEx
 			return sidea;
 		}
 
+		public void SmoothNormals()
+		{
+			for (int i = 0; i < normals.Count; i++)
+				normals[i] = vec3.empty;
+
+			for (int i = 0; i < triangles.Count; i += 3)
+			{
+				int ai = triangles[i];
+				int bi = triangles[i + 1];
+				int ci = triangles[i + 2];
+
+				vec3 a = vertices[ai];
+				vec3 b = vertices[bi];
+				vec3 c = vertices[ci];
+
+				vec3 n = ((b - a) % (c - a)).normalized;
+
+				normals[ai] = normals[ai].isEmpty ? n : (normals[ai] + n) / 2f;
+				normals[bi] = normals[bi].isEmpty ? n : (normals[bi] + n) / 2f;
+				normals[ci] = normals[ci].isEmpty ? n : (normals[ci] + n) / 2f;
+			}
+		}
+
 		public int[] Project(Plane plane)
 		{
 			List<int> contour = new List<int>();
