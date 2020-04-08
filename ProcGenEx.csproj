@@ -1,99 +1,27 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <Import Project="$(SolutionDir)\Common.props" />
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{54B51CA7-9E90-4961-A5A9-FD7173DE43C8}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ProcGenEx</RootNamespace>
-    <AssemblyName>ProcGenEx</AssemblyName>
-    <FileAlignment>512</FileAlignment>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug v3.5|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>$(SolutionDir)bin\Debug.UnityEx\Assemblies\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;UNITY_STANDALONE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release v3.5|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>$(SolutionDir)bin\Release.UnityEx\Assemblies\</OutputPath>
-    <DefineConstants>TRACE;UNITY_STANDALONE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>$(SolutionDir)bin\Debug.UnityEx\Assemblies\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;UNITY_STANDALONE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>$(SolutionDir)bin\Release.UnityEx\Assemblies\</OutputPath>
-    <DefineConstants>TRACE;UNITY_STANDALONE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Xml" />
+    <ProjectReference Include="$(SolutionDir)\Libraries\MathEx\MathEx.csproj" />
+    <ProjectReference Include="$(SolutionDir)\Libraries\MathEx\MathEx.UnityEngine.csproj" />
+    <ProjectReference Include="$(SolutionDir)\Libraries\SystemEx\SystemEx.csproj" />
+    <ProjectReference Include="$(SolutionDir)\Libraries\UnityEngineEx\UnityEngineEx.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="UnityEngine">
-      <HintPath>$(UNITYEDITORDATA_PATH)\Managed\UnityEngine.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>$(UnityEngineDll)</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(UnityEngineCoreModuleDll)</HintPath>
+      <Private>false</Private>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="src\MeshBuilder.cs" />
-    <Compile Include="src\Icosahedron.cs" />
-    <Compile Include="src\MeshBuilderEx.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)\Libraries\MathEx\MathEx.csproj">
-      <Project>{8d8a06e5-abfb-49a8-851a-070fcf5339aa}</Project>
-      <Name>MathEx</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)\Libraries\MathEx\MathEx.UnityEngine.csproj">
-      <Project>{d707c31e-1c84-42a1-9790-3ebbf75ea645}</Project>
-      <Name>MathEx.UnityEngine</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)\Libraries\SystemEx\SystemEx.csproj">
-      <Project>{0271e27f-e614-4b0f-af16-05d2d2781b7f}</Project>
-      <Name>SystemEx</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)\Libraries\UnityEngineEx\UnityEngineEx.csproj">
-      <Project>{E323793C-989D-4E1E-8F78-96C6D5ED6CAA}</Project>
-      <Name>UnityEngineEx</Name>
-      <Private>False</Private>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>
