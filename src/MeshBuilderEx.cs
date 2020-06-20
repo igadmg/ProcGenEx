@@ -8,7 +8,8 @@ namespace ProcGenEx
 	{
 		public static MeshBuilder Rotate(this MeshBuilder mb, Quaternion rotation)
 		{
-			for (int i = 0; i < mb.vertices.Count; i++) {
+			for (int i = 0; i < mb.vertices.Count; i++)
+			{
 				mb.vertices[i] = (rotation * mb.vertices[i].ToVector3()).ToVec3();
 				mb.normals[i] = (rotation * mb.normals[i].ToVector3()).ToVec3();
 			}
@@ -19,7 +20,8 @@ namespace ProcGenEx
 		public static MeshBuilder Hole(this MeshBuilder mb, int vertex)
 		{
 			int sparevertex = vertex;
-			for (int i = 0; i < mb.triangles.Count; i+=3) {
+			for (int i = 0; i < mb.triangles.Count; i += 3)
+			{
 				var vi = mb.triangles.IndexOf(vertex);
 				if (vi < 0) continue;
 
@@ -34,7 +36,8 @@ namespace ProcGenEx
 
 		public static MeshBuilder Cut(this MeshBuilder mb, params int[] vs)
 		{
-			for (int i = 2; i < vs.Length; i++) {
+			for (int i = 2; i < vs.Length; i++)
+			{
 
 			}
 
@@ -51,7 +54,8 @@ namespace ProcGenEx
 
 		public static MeshBuilder Noize(this MeshBuilder mb, float random, float noiseDensity = 2f, float scale = .75f)
 		{
-			for (int i = 0; i < mb.vertices.Count; i++) {
+			for (int i = 0; i < mb.vertices.Count; i++)
+			{
 				vec3 v = mb.vertices[i];
 				v.Mul(new vec3(noiseDensity, noiseDensity, noiseDensity));
 				float noise1 = Noise.GetOctaveNoise(v.x + random, v.y + random, v.z + random, 4) * scale;
@@ -65,7 +69,8 @@ namespace ProcGenEx
 		public static float Radius(this MeshBuilder mb)
 		{
 			float r = 0;
-			for (int i = 0; i < mb.vertices.Count; i++) {
+			for (int i = 0; i < mb.vertices.Count; i++)
+			{
 				float vm = mb.vertices[i].magnitude;
 				if (r < vm)
 					r = vm;

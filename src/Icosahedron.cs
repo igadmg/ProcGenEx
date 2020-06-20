@@ -1,8 +1,6 @@
 ﻿using MathEx;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using SystemEx;
 using UnityEngine;
 
@@ -24,13 +22,15 @@ namespace ProcGenEx
 			vs.Add(mesh.CreateVertex(north, north));
 
 			sv = new svec3(1.0f / 2.0f, vi, 0);
-			for (int i = 0; i < 5; i++, sv.a += da) {
+			for (int i = 0; i < 5; i++, sv.a += da)
+			{
 				vec3 cv = sv.ToVec3().normalized.xzy() / 2.0f;
 				vs.Add(mesh.CreateVertex(cv, cv));
 			}
 
 			sv = new svec3(1.0f / 2.0f, 180 * Mathf.Deg2Rad - vi, da / 2.0f);
-			for (int i = 0; i < 5; i++, sv.a += da) {
+			for (int i = 0; i < 5; i++, sv.a += da)
+			{
 				vec3 cv = sv.ToVec3().normalized.xzy() / 2.0f;
 				vs.Add(mesh.CreateVertex(cv, cv));
 			}
@@ -81,14 +81,16 @@ namespace ProcGenEx
 
 			float uvdx = 1.0f / 5.0f;
 			uvx = uvdx / 2.0f;
-			for (int i = 0; i < 5; i++, uvx += uvdx) {
+			for (int i = 0; i < 5; i++, uvx += uvdx)
+			{
 				vs.Add(mesh.CreateVertex(north, north, new vec2(uvx, 1.0f)));
 			}
 
 			uvy = 2.0f / 3.0f;
 			uvx = 0;
 			sv = new svec3(1.0f / 2.0f, vi, 0);
-			for (int i = 0; i < 5; i++, uvx += uvdx, sv.a += da) {
+			for (int i = 0; i < 5; i++, uvx += uvdx, sv.a += da)
+			{
 				vec3 cv = sv.ToVec3().normalized.xzy() / 2.0f;
 				vs.Add(mesh.CreateVertex(cv, cv, new vec2(uvx, uvy)));
 			}
@@ -100,7 +102,8 @@ namespace ProcGenEx
 			uvy = 1.0f / 3.0f;
 			uvx = uvdx / 2.0f;
 			sv = new svec3(1.0f / 2.0f, 180 * Mathf.Deg2Rad - vi, da / 2.0f);
-			for (int i = 0; i < 5; i++, uvx += uvdx, sv.a += da) {
+			for (int i = 0; i < 5; i++, uvx += uvdx, sv.a += da)
+			{
 				vec3 cv = sv.ToVec3().normalized.xzy() / 2.0f;
 				vs.Add(mesh.CreateVertex(cv, cv, new vec2(uvx, uvy)));
 			}
@@ -110,7 +113,8 @@ namespace ProcGenEx
 			}
 
 			uvx = uvdx;
-			for (int i = 0; i < 5; i++, uvx += uvdx) {
+			for (int i = 0; i < 5; i++, uvx += uvdx)
+			{
 				vs.Add(mesh.CreateVertex(south, south, new vec2(uvx, 0.0f)));
 			}
 
@@ -143,10 +147,11 @@ namespace ProcGenEx
 
 		public static MeshBuilder Subdivide(MeshBuilder mesh)
 		{
-			Dictionary<Tuple<int, int>, int> vertices = new Dictionary<Tuple<int,int>, int>();
+			Dictionary<Tuple<int, int>, int> vertices = new Dictionary<Tuple<int, int>, int>();
 
 			int icount = mesh.triangles.Count;
-			for (int i = 0; i < icount; i += 3) {
+			for (int i = 0; i < icount; i += 3)
+			{
 				var ta = mesh.triangles[i];
 				var tb = mesh.triangles[i + 1];
 				var tc = mesh.triangles[i + 2];
@@ -155,10 +160,11 @@ namespace ProcGenEx
 				Func<int, int, int> createFn = (int va, int vb) => {
 					int vr;
 					var key = Tuple.Create(va, vb).Sort();
-					if (!vertices.TryGetValue(key, out vr)) {
+					if (!vertices.TryGetValue(key, out vr))
+					{
 						var v = (mesh.vertices[va] + (mesh.vertices[vb] - mesh.vertices[va]) / 2).normalized / 2.0f;
-						var uv =  (mesh.uvs[va] + (mesh.uvs[vb] - mesh.uvs[va]) / 2);
-						vr = mesh.CreateVertex(v , v, uv);
+						var uv = (mesh.uvs[va] + (mesh.uvs[vb] - mesh.uvs[va]) / 2);
+						vr = mesh.CreateVertex(v, v, uv);
 						vertices.Add(key, vr);
 					}
 					return vr;
@@ -181,7 +187,8 @@ namespace ProcGenEx
 
 		public static MeshBuilder UpdateUV(MeshBuilder mesh)
 		{
-			for (int i = 0; i < mesh.vertices.Count; i++) {
+			for (int i = 0; i < mesh.vertices.Count; i++)
+			{
 				var v = mesh.vertices[i];
 
 				if (v.y == 0.5f || v.y == -0.5f)
@@ -190,10 +197,12 @@ namespace ProcGenEx
 				svec3 uv = (svec3)v.xzy();
 				vec2 textureCoordinates;
 				textureCoordinates.x = uv.a / (2.0f * Mathf.PI);
-				if (textureCoordinates.x < 0f) {
+				if (textureCoordinates.x < 0f)
+				{
 					textureCoordinates.x += 1f;
 				}
-				if ((mesh.uvs[i].x - textureCoordinates.x) > 0.5f) { // hehehehe
+				if ((mesh.uvs[i].x - textureCoordinates.x) > 0.5f)
+				{ // hehehehe
 					textureCoordinates.x += 1f;
 				}
 				//textureCoordinates.y = uv.i / Mathf.PI;

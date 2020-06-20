@@ -22,31 +22,36 @@ namespace ProcGenEx
 			var sides = new Dictionary<Tuple<int, int>, List<int>>();
 			Action<Tuple<int, int>, int> sidesIn = (Tuple<int, int> p, int ti) => {
 				List<int> tp;
-				if (!sides.TryGetValue(p.Sort(), out tp)) {
+				if (!sides.TryGetValue(p.Sort(), out tp))
+				{
 					tp = new List<int>(2);
 					tp.Add(ti);
 					sides.Add(p.Sort(), tp);
 				}
-				else {
+				else
+				{
 					tp.Add(ti);
 				}
 			};
 			Action<int, int> nodesIn = (int t0, int t1) => {
 				Node n;
-				if (!nodes.TryGetValue(t0, out n)) {
+				if (!nodes.TryGetValue(t0, out n))
+				{
 					n = new Node();
 					n.i = t0;
 					n.links = new List<int>(3);
 					n.links.Add(t1);
 					nodes.Add(t0, n);
 				}
-				else {
+				else
+				{
 					n.links.Add(t1);
 					nodes[t0] = n;
 				}
 			};
 
-			for (int i = 0; i < triangles.Count; i++) {
+			for (int i = 0; i < triangles.Count; i++)
+			{
 				var ta = triangles[i];
 				var tb = triangles[i + 1];
 				var tc = triangles[i + 2];
@@ -56,7 +61,8 @@ namespace ProcGenEx
 				sidesIn(Tuple.Create(tc, ta), i);
 			}
 
-			foreach (var link in sides.Values) {
+			foreach (var link in sides.Values)
+			{
 				nodesIn(link[0], link[1]);
 				nodesIn(link[1], link[0]);
 			}
@@ -109,7 +115,8 @@ namespace ProcGenEx
 
 		public void RecodeVertices(List<int> newVertexIndices)
 		{
-			if (newVertexIndices.Count != vertices.Count) {
+			if (newVertexIndices.Count != vertices.Count)
+			{
 				return;
 			}
 
@@ -117,7 +124,8 @@ namespace ProcGenEx
 			List<vec3> nnormals = new List<vec3>(new vec3[vertices.Count]);
 			List<vec2> nuvs = new List<vec2>(new vec2[vertices.Count]);
 
-			for (int i = 0; i < vertices.Count; i++) {
+			for (int i = 0; i < vertices.Count; i++)
+			{
 				nvertices[newVertexIndices[i]] = vertices[i];
 				nnormals[newVertexIndices[i]] = normals[i];
 				nuvs[newVertexIndices[i]] = uvs[i];
@@ -126,13 +134,14 @@ namespace ProcGenEx
 			normals = nnormals;
 			nuvs = uvs;
 
-			for (int i = 0; i < triangles.Count; i++) {
+			for (int i = 0; i < triangles.Count; i++)
+			{
 				triangles[i] = newVertexIndices[i];
 			}
 
 		}
 
-#region Simple figures
+		#region Simple figures
 
 		public int[] AddTriangle(vec3 a, vec3 b, vec3 c)
 		{
@@ -249,15 +258,18 @@ namespace ProcGenEx
 
 			int ri = 0;
 			vec3 v;
-			for (int i = 0; i < cn; i++) {
+			for (int i = 0; i < cn; i++)
+			{
 				v = origin + i * right * dv.x;
-				for (int j = 0; j < rn; j++, v += forward * dv.y) {
+				for (int j = 0; j < rn; j++, v += forward * dv.y)
+				{
 					result[ri++] = CreateVertex(v, n);
 				}
 			}
 
 			int vi = 0;
-			for (int i = 0; i < tn / 2; i++, vi++) {
+			for (int i = 0; i < tn / 2; i++, vi++)
+			{
 				if (((vi + 1) % rn) == 0)
 					vi++;
 
@@ -273,7 +285,7 @@ namespace ProcGenEx
 			int rn = step.y + 1;
 			int vn = cn * rn;
 			int tn = step.x * step.y * 2;
-			
+
 			int[] result = new int[vn];
 
 			Grow(vn, tn);
@@ -417,7 +429,8 @@ namespace ProcGenEx
 
 		public void MakeFan(params int[] ps)
 		{
-			for (int i = 1; i < ps.Length - 1; i++) {
+			for (int i = 1; i < ps.Length - 1; i++)
+			{
 				MakeTriangle(ps[0], ps[i], ps[i + 1]);
 			}
 		}
@@ -428,12 +441,14 @@ namespace ProcGenEx
 			Grow(contour.Length * steps, contour.Length * steps * 2);
 
 			vec3 dv = direction / steps;
-			for (int si = 0; si < steps; si++) {
+			for (int si = 0; si < steps; si++)
+			{
 				int pv = CopyVertex(contour[0], dv);
-				for (int i = 1; i < contour.Length; i++) {
+				for (int i = 1; i < contour.Length; i++)
+				{
 					int cv = CopyVertex(contour[i], dv);
 
-					MakeQuad(contour[i-1], pv, cv, contour[i]);
+					MakeQuad(contour[i - 1], pv, cv, contour[i]);
 
 					contour[i - 1] = pv;
 					pv = cv;
@@ -450,25 +465,29 @@ namespace ProcGenEx
 			List<vec2> us = uvs;
 			List<int> ts = triangles;
 
-			vertices = new List<vec3>(vs.Count);;
+			vertices = new List<vec3>(vs.Count); ;
 			normals = new List<vec3>(vs.Count);
 			uvs = new List<vec2>(vs.Count);
 			triangles = new List<int>(ts.Count);
 
 
-			for (int i = 0; i < vs.Count; i++) {
-				if (plane.GetDistanceToPoint(MathEx.Convert.ToVector3(vs[i])) >= 0) {
+			for (int i = 0; i < vs.Count; i++)
+			{
+				if (plane.GetDistanceToPoint(MathEx.Convert.ToVector3(vs[i])) >= 0)
+				{
 					v2v[i] = CreateVertex(vs[i], ns[i], us[i]);
 				}
 			}
 
 
-			for (int i = 0; i < ts.Count; i += 3) {
+			for (int i = 0; i < ts.Count; i += 3)
+			{
 				int st = ((v2v[ts[i]] < 0 ? 0 : 1) << 0) + ((v2v[ts[i + 1]] < 0 ? 0 : 1) << 1) + ((v2v[ts[i + 2]] < 0 ? 0 : 1) << 2);
 
 				if (st == 0)
 					continue;
-				if (st == 7) {
+				if (st == 7)
+				{
 					MakeTriangle(v2v[ts[i]], v2v[ts[i + 1]], v2v[ts[i + 2]]);
 					continue;
 				}
@@ -482,24 +501,30 @@ namespace ProcGenEx
 
 				List<int> nvs = new List<int>(4);
 
-				if (!(v2v[ts[i]] < 0)) {
+				if (!(v2v[ts[i]] < 0))
+				{
 					nvs.Add(v2v[ts[i]]);
 				}
-				if (abi && (abd > 0 && abd < 1)) {
+				if (abi && (abd > 0 && abd < 1))
+				{
 					nvs.Add(CreateVertex(ab, abd.Slerp(ns[ts[i]], ns[ts[i + 1]])));
 				}
 
-				if (!(v2v[ts[i + 1]] < 0)) {
+				if (!(v2v[ts[i + 1]] < 0))
+				{
 					nvs.Add(v2v[ts[i + 1]]);
 				}
-				if (bci && (bcd > 0 && bcd < 1)) {
+				if (bci && (bcd > 0 && bcd < 1))
+				{
 					nvs.Add(CreateVertex(bc, bcd.Slerp(ns[ts[i + 1]], ns[ts[i + 2]])));
 				}
 
-				if (!(v2v[ts[i + 2]] < 0)) {
+				if (!(v2v[ts[i + 2]] < 0))
+				{
 					nvs.Add(v2v[ts[i + 2]]);
 				}
-				if (cai && (cad > 0 && cad < 1)) {
+				if (cai && (cad > 0 && cad < 1))
+				{
 					nvs.Add(CreateVertex(ca, cad.Slerp(ns[ts[i + 2]], ns[ts[i]])));
 				}
 
@@ -511,8 +536,10 @@ namespace ProcGenEx
 		{
 			List<int> result = new List<int>(vertices.Count);
 
-			for (int i = 0; i < vertices.Count; i++) {
-				if (plane.GetDistanceToPoint(MathEx.Convert.ToVector3(vertices[i])) >= 0) {
+			for (int i = 0; i < vertices.Count; i++)
+			{
+				if (plane.GetDistanceToPoint(MathEx.Convert.ToVector3(vertices[i])) >= 0)
+				{
 					result.Add(i);
 				}
 			}
@@ -525,8 +552,10 @@ namespace ProcGenEx
 			sidea = new List<int>(vertices.Count);
 			sideb = new List<int>(vertices.Count);
 
-			for (int i = 0; i < vertices.Count; i++) {
-				if (plane.GetDistanceToPoint(MathEx.Convert.ToVector3(vertices[i])) >= 0) {
+			for (int i = 0; i < vertices.Count; i++)
+			{
+				if (plane.GetDistanceToPoint(MathEx.Convert.ToVector3(vertices[i])) >= 0)
+				{
 					sidea.Add(i);
 				}
 				else
@@ -540,8 +569,10 @@ namespace ProcGenEx
 		{
 			sidea = new List<int>(vertices.Count);
 
-			for (int i = 0; i < vertices.Count; i++) {
-				if (r.distance(vertices[i]) < radius) {
+			for (int i = 0; i < vertices.Count; i++)
+			{
+				if (r.distance(vertices[i]) < radius)
+				{
 					sidea.Add(i);
 				}
 			}
@@ -554,8 +585,10 @@ namespace ProcGenEx
 			sidea = new List<int>(vertices.Count);
 			sideb = new List<int>(vertices.Count);
 
-			for (int i = 0; i < vertices.Count; i++) {
-				if (r.distance(vertices[i]) < radius) {
+			for (int i = 0; i < vertices.Count; i++)
+			{
+				if (r.distance(vertices[i]) < radius)
+				{
 					sidea.Add(i);
 				}
 				else
@@ -608,13 +641,15 @@ namespace ProcGenEx
 
 			aabb2 b = aabb2.empty;
 			Quaternion q = Quaternion.LookRotation(MathEx.Convert.ToVector3(forward), plane.normal);
-			for (int i = 0; i < vs.Length; i++) {
+			for (int i = 0; i < vs.Length; i++)
+			{
 				pvs[i] = MathEx.Convert.ToVec3(q * MathEx.Convert.ToVector3(vertices[vs[i]])).xz();
 				b = b.Extend(pvs[i]);
 			}
 
 			Debug.Log(b);
-			for (int i = 0; i < vs.Length; i++) {
+			for (int i = 0; i < vs.Length; i++)
+			{
 				uvs[vs[i]] = uvrect.a + uvrect.size.Mul((pvs[i] - b.a).Div(b.size));
 				Debug.Log(uvs[vs[i]]);
 			}
