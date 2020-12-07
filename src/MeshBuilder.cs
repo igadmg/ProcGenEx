@@ -93,9 +93,9 @@ namespace ProcGenEx
 		{
 			Mesh m = new Mesh();
 
-			m.vertices = vertices.ConvertAll<Vector3>(v => v.ToVector3()).ToArray();
-			m.normals = normals.ConvertAll<Vector3>(v => v.ToVector3()).ToArray();
-			m.uv = uvs.ConvertAll<Vector2>(v => v.ToVector2()).ToArray();
+			m.vertices = vertices.ConvertAll(v => v.ToVector3()).ToArray();
+			m.normals = normals.ConvertAll(v => v.ToVector3()).ToArray();
+			m.uv = uvs.ConvertAll(v => v.ToVector2()).ToArray();
 			m.triangles = triangles.ToArray();
 
 			m.Apply();
@@ -138,7 +138,6 @@ namespace ProcGenEx
 			{
 				triangles[i] = newVertexIndices[i];
 			}
-
 		}
 
 		#region Simple figures

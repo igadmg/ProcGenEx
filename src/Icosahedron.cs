@@ -1,16 +1,22 @@
 ﻿using MathEx;
 using System;
 using System.Collections.Generic;
-using SystemEx;
 using UnityEngine;
 
 namespace ProcGenEx
 {
-	public class Icosahedron
+	public static class Icosahedron
 	{
-		public static MeshBuilder CreateSimple()
+		public class IcosahedronMeshBuilder : MeshBuilder
 		{
-			MeshBuilder mesh = new MeshBuilder(12, 20);
+			public IcosahedronMeshBuilder(int VertexCount, int TriangleCount) : base(VertexCount, TriangleCount)
+			{
+			}
+		}
+
+		public static IcosahedronMeshBuilder CreateSimple()
+		{
+			IcosahedronMeshBuilder mesh = new IcosahedronMeshBuilder(12, 20);
 			List<int> vs = new List<int>(12);
 
 			vec3 north = vec3.up / 2.0f;
@@ -64,9 +70,9 @@ namespace ProcGenEx
 			return mesh;
 		}
 
-		public static MeshBuilder Create()
+		public static IcosahedronMeshBuilder Create()
 		{
-			MeshBuilder mesh = new MeshBuilder(22, 20);
+			IcosahedronMeshBuilder mesh = new IcosahedronMeshBuilder(22, 20);
 			List<int> vs = new List<int>(22);
 			List<int> polarvs = new List<int>();
 			List<int> edgevs = new List<int>();
@@ -145,7 +151,7 @@ namespace ProcGenEx
 			return mesh;
 		}
 
-		public static MeshBuilder Subdivide(MeshBuilder mesh)
+		public static MeshBuilder Subdivide(this IcosahedronMeshBuilder mesh, int steps = 1)
 		{
 			Dictionary<Tuple<int, int>, int> vertices = new Dictionary<Tuple<int, int>, int>();
 
@@ -155,37 +161,90 @@ namespace ProcGenEx
 				var ta = mesh.triangles[i];
 				var tb = mesh.triangles[i + 1];
 				var tc = mesh.triangles[i + 2];
+				var va = mesh.vertices[ta];
+				var vb = mesh.vertices[tb];
+				var vc = mesh.vertices[tc];
 
+				Func<int, int> newVerticesNumFn = n => n.Asum(2) + n;
+				Func<int, int> newTrianglesNumFn = n => n.Asum(3, 2);
+				int newVerticesNum = newVerticesNumFn(steps);
+				int newTrianglesNum = newTrianglesNumFn(steps);
 
-				Func<int, int, int> createFn = (int va, int vb) => {
-					int vr;
-					var key = Tuple.Create(va, vb).Sort();
-					if (!vertices.TryGetValue(key, out vr))
+				mesh.Grow(newVerticesNum, newTrianglesNum);
+				int[] newVertices = new int[newVerticesNum];
+				int nvi = 0;
+
+				// Generate new vertices.
+				{
+					for (int j = 0; j < steps; j++)
 					{
-						var v = (mesh.vertices[va] + (mesh.vertices[vb] - mesh.vertices[va]) / 2).normalized / 2.0f;
-						var uv = (mesh.uvs[va] + (mesh.uvs[vb] - mesh.uvs[va]) / 2);
-						vr = mesh.CreateVertex(v, v, uv);
-						vertices.Add(key, vr);
+						float a = (j + 1) * 1.0f / (steps + 1);
+						var vaj = a.Lerp(va, vc);
+						var vbj = a.Lerp(va, vb);
+						int ke = 2 + j;
+						for (int k = 0; k < ke; k++)
+						{
+							float ak = k * 1.0f / (ke - 1);
+							var nv = ak.Lerp(vaj, vbj).normalized;
+							newVertices[nvi++] = mesh.CreateVertex(nv / 2.0f, nv);
+						}
 					}
-					return vr;
-				};
-				int td = createFn(ta, tb);
-				int te = createFn(tb, tc);
-				int tf = createFn(tc, ta);
+					{
+						for (int k = 0; k < steps; k++)
+						{
+							float ak = (k + 1) * 1.0f / (steps + 1);
+							var nv = ak.Lerp(vc, vb).normalized;
+							newVertices[nvi++] = mesh.CreateVertex(nv / 2.0f, nv);
+						}
+					}
+				}
 
-				mesh.triangles[i] = td;
-				mesh.triangles[i + 1] = te;
-				mesh.triangles[i + 2] = tf;
+				// Convert original triangle to top triangle
+				mesh.triangles[i] = ta;
+				mesh.triangles[i + 1] = newVertices[1];
+				mesh.triangles[i + 2] = newVertices[0];
 
-				mesh.MakeTriangle(ta, td, tf);
-				mesh.MakeTriangle(tb, te, td);
-				mesh.MakeTriangle(tc, tf, te);
+				// build the middle section
+				for (int j = 0; j < steps - 1; j++)
+				{
+					int ti = j.Asum(2);
+					int tj = (j + 1).Asum(2);
+					int tk = (j + 2).Asum(2);
+
+					for (int k = 0; k < (tj - ti - 1); k++)
+					{
+						mesh.MakeTriangle(newVertices[ti + k], newVertices[tj + k + 1], newVertices[tj + k]);
+						mesh.MakeTriangle(newVertices[ti + k], newVertices[ti + k + 1], newVertices[tj + k + 1]);
+					}
+					mesh.MakeTriangle(newVertices[tj - 1], newVertices[tk - 1], newVertices[tk - 2]);
+				}
+
+				// build last row
+				{
+					int ti = (steps - 1).Asum(2);
+					int tj = steps.Asum(2);
+
+					for (int k = 0; k < (tj - ti - 1); k++)
+					{
+						if (k == 0)
+						{
+							mesh.MakeTriangle(newVertices[ti], newVertices[tj], tc);
+						}
+						else
+						{
+							mesh.MakeTriangle(newVertices[ti + k], newVertices[tj + k], newVertices[tj + k - 1]);
+						}
+						mesh.MakeTriangle(newVertices[ti + k], newVertices[ti + k + 1], newVertices[tj + k]);
+					}
+
+					mesh.MakeTriangle(newVertices[tj - 1], tb, newVertices[newVerticesNum - 1]);
+				}
 			}
 
 			return mesh;
 		}
 
-		public static MeshBuilder UpdateUV(MeshBuilder mesh)
+		public static MeshBuilder UpdateUV(this IcosahedronMeshBuilder mesh)
 		{
 			for (int i = 0; i < mesh.vertices.Count; i++)
 			{
