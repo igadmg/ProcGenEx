@@ -154,12 +154,22 @@ namespace ProcGenEx
 
 		class EdgeVertexMap
 		{
-			//public void Add(Edge edge, vec3 
+			Dictionary<Edge, List<uint>> vertices = new Dictionary<Edge, List<uint>>(); 
+
+			public void Add(Edge edge, uint v)
+			{
+				vertices.GetOrAdd(edge, () => new List<uint>()).Add(v);
+			}
+
+			public uint[] Get(Edge edge)
+			{
+				return vertices.Get(edge, vertices.Get(edge.Reverse())?.Reversed())?.ToArray();
+			}
 		}
 
 		public static MeshBuilder Subdivide(this IcosahedronMeshBuilder mesh, int steps = 1)
 		{
-			var vertices = new Dictionary<Tuple<uint, uint>, uint>();
+			var edgeVertexMap = new EdgeVertexMap();
 
 			int icount = mesh.triangles.Count;
 			for (int i = 0; i < icount; i += 3)
@@ -182,25 +192,67 @@ namespace ProcGenEx
 
 				// Generate new vertices.
 				{
+					var eA = new Edge(ta, tc);
+					var eAv = edgeVertexMap.Get(eA);
+					var eB = new Edge(ta, tb);
+					var eBv = edgeVertexMap.Get(eB);
+					var eC = new Edge(tc, tb);
+					var eCv = edgeVertexMap.Get(eC);
+
 					for (int j = 0; j < steps; j++)
 					{
 						float a = (j + 1) * 1.0f / (steps + 1);
-						var vaj = a.Lerp(va, vc);
-						var vbj = a.Lerp(va, vb);
+						var vaj = a.Lerp(va, vc).normalized;
+						var vbj = a.Lerp(va, vb).normalized;
 						int ke = 2 + j;
-						for (int k = 0; k < ke; k++)
+
+						if (eAv == null)
+						{
+							var nv = mesh.CreateVertex(vaj / 2.0f, vaj);
+							edgeVertexMap.Add(eA, nv);
+							newVertices[nvi++] = nv;
+						}
+						else
+						{
+							newVertices[nvi++] = eAv[j];
+						}
+
+						for (int k = 1; k < ke - 1; k++)
 						{
 							float ak = k * 1.0f / (ke - 1);
 							var nv = ak.Lerp(vaj, vbj).normalized;
 							newVertices[nvi++] = mesh.CreateVertex(nv / 2.0f, nv);
 						}
+
+						if (eBv == null)
+						{
+							var nv = mesh.CreateVertex(vbj / 2.0f, vbj);
+							edgeVertexMap.Add(eB, nv);
+							newVertices[nvi++] = nv;
+						}
+						else
+						{
+							newVertices[nvi++] = eBv[j];
+						}
 					}
 					{
-						for (int k = 0; k < steps; k++)
+						if (eCv == null)
 						{
-							float ak = (k + 1) * 1.0f / (steps + 1);
-							var nv = ak.Lerp(vc, vb).normalized;
-							newVertices[nvi++] = mesh.CreateVertex(nv / 2.0f, nv);
+							for (int k = 0; k < steps; k++)
+							{
+								float ak = (k + 1) * 1.0f / (steps + 1);
+								var nv = ak.Lerp(vc, vb).normalized;
+								var nvv = mesh.CreateVertex(nv / 2.0f, nv);
+								edgeVertexMap.Add(eC, nvv);
+								newVertices[nvi++] = nvv;
+							}
+						}
+						else
+						{
+							for (int k = 0; k < steps; k++)
+							{
+								newVertices[nvi++] = eCv[k];
+							}
 						}
 					}
 				}
