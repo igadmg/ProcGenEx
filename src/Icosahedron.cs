@@ -1,6 +1,7 @@
 ﻿using MathEx;
 using System;
 using System.Collections.Generic;
+using SystemEx;
 using UnityEngine;
 
 namespace ProcGenEx
@@ -17,7 +18,7 @@ namespace ProcGenEx
 		public static IcosahedronMeshBuilder CreateSimple()
 		{
 			IcosahedronMeshBuilder mesh = new IcosahedronMeshBuilder(12, 20);
-			List<int> vs = new List<int>(12);
+			List<uint> vs = new List<uint>(12);
 
 			vec3 north = vec3.up / 2.0f;
 			vec3 south = vec3.down / 2.0f;
@@ -73,10 +74,10 @@ namespace ProcGenEx
 		public static IcosahedronMeshBuilder Create()
 		{
 			IcosahedronMeshBuilder mesh = new IcosahedronMeshBuilder(22, 20);
-			List<int> vs = new List<int>(22);
-			List<int> polarvs = new List<int>();
-			List<int> edgevs = new List<int>();
-			List<int> commonvs = new List<int>();
+			List<uint> vs = new List<uint>(22);
+			List<uint> polarvs = new List<uint>();
+			List<uint> edgevs = new List<uint>();
+			List<uint> commonvs = new List<uint>();
 
 			vec3 north = vec3.up / 2.0f;
 			vec3 south = vec3.down / 2.0f;
@@ -151,9 +152,14 @@ namespace ProcGenEx
 			return mesh;
 		}
 
+		class EdgeVertexMap
+		{
+			//public void Add(Edge edge, vec3 
+		}
+
 		public static MeshBuilder Subdivide(this IcosahedronMeshBuilder mesh, int steps = 1)
 		{
-			Dictionary<Tuple<int, int>, int> vertices = new Dictionary<Tuple<int, int>, int>();
+			var vertices = new Dictionary<Tuple<uint, uint>, uint>();
 
 			int icount = mesh.triangles.Count;
 			for (int i = 0; i < icount; i += 3)
@@ -161,9 +167,9 @@ namespace ProcGenEx
 				var ta = mesh.triangles[i];
 				var tb = mesh.triangles[i + 1];
 				var tc = mesh.triangles[i + 2];
-				var va = mesh.vertices[ta];
-				var vb = mesh.vertices[tb];
-				var vc = mesh.vertices[tc];
+				var va = mesh.vertices.at(ta);
+				var vb = mesh.vertices.at(tb);
+				var vc = mesh.vertices.at(tc);
 
 				Func<int, int> newVerticesNumFn = n => n.Asum(2) + n;
 				Func<int, int> newTrianglesNumFn = n => n.Asum(3, 2);
@@ -171,7 +177,7 @@ namespace ProcGenEx
 				int newTrianglesNum = newTrianglesNumFn(steps);
 
 				mesh.Grow(newVerticesNum, newTrianglesNum);
-				int[] newVertices = new int[newVerticesNum];
+				uint[] newVertices = new uint[newVerticesNum];
 				int nvi = 0;
 
 				// Generate new vertices.

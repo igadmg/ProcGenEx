@@ -17,18 +17,18 @@ namespace ProcGenEx
 			return mb;
 		}
 
-		public static MeshBuilder Hole(this MeshBuilder mb, int vertex)
+		public static MeshBuilder Hole(this MeshBuilder mb, uint vertex)
 		{
-			int sparevertex = vertex;
+			uint sparevertex = vertex;
 			for (int i = 0; i < mb.triangles.Count; i += 3)
 			{
 				var vi = mb.triangles.IndexOf(vertex);
 				if (vi < 0) continue;
 
-				if (sparevertex == -1)
+				if (sparevertex == uint.MaxValue)
 					sparevertex = mb.CopyVertex(vertex);
 				mb.triangles[vi] = sparevertex;
-				sparevertex = -1;
+				sparevertex = uint.MaxValue;
 			}
 
 			return mb;

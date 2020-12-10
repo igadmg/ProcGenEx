@@ -1,6 +1,7 @@
 using MathEx;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SystemEx;
 using UnityEngine;
 using UnityEngineEx;
@@ -74,7 +75,7 @@ namespace ProcGenEx
 		public List<vec3> vertices = null;
 		public List<vec3> normals = null;
 		public List<vec2> uvs = null;
-		public List<int> triangles = null;
+		public List<uint> triangles = null;
 
 		public MeshBuilder()
 			: this(0, 0)
@@ -86,7 +87,7 @@ namespace ProcGenEx
 			vertices = new List<vec3>(VertexCount);
 			normals = new List<vec3>(VertexCount);
 			uvs = new List<vec2>(VertexCount);
-			triangles = new List<int>(TriangleCount * 3);
+			triangles = new List<uint>(TriangleCount * 3);
 		}
 
 		public Mesh ToMesh()
@@ -96,7 +97,7 @@ namespace ProcGenEx
 			m.vertices = vertices.ConvertAll(v => v.ToVector3()).ToArray();
 			m.normals = normals.ConvertAll(v => v.ToVector3()).ToArray();
 			m.uv = uvs.ConvertAll(v => v.ToVector2()).ToArray();
-			m.triangles = triangles.ToArray();
+			m.triangles = triangles.Select(i => (int)i).ToArray();
 
 			m.Apply();
 
@@ -113,7 +114,7 @@ namespace ProcGenEx
 			triangles.Capacity = dtc;
 		}
 
-		public void RecodeVertices(List<int> newVertexIndices)
+		public void RecodeVertices(List<uint> newVertexIndices)
 		{
 			if (newVertexIndices.Count != vertices.Count)
 			{
@@ -126,9 +127,9 @@ namespace ProcGenEx
 
 			for (int i = 0; i < vertices.Count; i++)
 			{
-				nvertices[newVertexIndices[i]] = vertices[i];
-				nnormals[newVertexIndices[i]] = normals[i];
-				nuvs[newVertexIndices[i]] = uvs[i];
+				nvertices.at(newVertexIndices[i], vertices[i]);
+				nnormals.at(newVertexIndices[i], normals[i]);
+				nuvs.at(newVertexIndices[i], uvs[i]);
 			}
 			vertices = nvertices;
 			normals = nnormals;
@@ -142,17 +143,14 @@ namespace ProcGenEx
 
 		#region Simple figures
 
-		public int[] AddTriangle(vec3 a, vec3 b, vec3 c)
+		public uint[] AddTriangle(vec3 a, vec3 b, vec3 c)
 		{
-			int[] result = null;
+			uint[] result = new uint[3];
 			return AddTriangle(a, b, c, ref result);
 		}
 
-		public int[] AddTriangle(vec3 a, vec3 b, vec3 c, ref int[] result)
+		public uint[] AddTriangle(vec3 a, vec3 b, vec3 c, ref uint[] result)
 		{
-			if (result == null)
-				result = new int[3];
-
 			var n = vec3.Cross((c - a), (a - b)).normalized;
 
 			Grow(3, 1);
@@ -165,17 +163,14 @@ namespace ProcGenEx
 			return result;
 		}
 
-		public int[] AddTriangle(vec3[] v, vec2[] uv)
+		public uint[] AddTriangle(vec3[] v, vec2[] uv)
 		{
-			int[] result = null;
+			uint[] result = new uint[3];
 			return AddTriangle(v, uv, ref result);
 		}
 
-		public int[] AddTriangle(vec3[] v, vec2[] uv, ref int[] result)
+		public uint[] AddTriangle(vec3[] v, vec2[] uv, ref uint[] result)
 		{
-			if (result == null)
-				result = new int[3];
-
 			var n = vec3.Cross((v[2] - v[0]), (v[0] - v[1])).normalized;
 
 			Grow(3, 1);
@@ -188,17 +183,14 @@ namespace ProcGenEx
 			return result;
 		}
 
-		public int[] AddQuad(vec3 a, vec3 b, vec3 c, vec3 d)
+		public uint[] AddQuad(vec3 a, vec3 b, vec3 c, vec3 d)
 		{
-			int[] result = null;
+			uint[] result = new uint[4];
 			return AddQuad(a, b, c, d, ref result);
 		}
 
-		public int[] AddQuad(vec3 a, vec3 b, vec3 c, vec3 d, ref int[] result)
+		public uint[] AddQuad(vec3 a, vec3 b, vec3 c, vec3 d, ref uint[] result)
 		{
-			if (result == null)
-				result = new int[4];
-
 			var n = vec3.Cross((c - a), (a - b)).normalized;
 
 			Grow(4, 2);
@@ -212,17 +204,14 @@ namespace ProcGenEx
 			return result;
 		}
 
-		public int[] AddQuad(vec3[] v, vec2[] uv)
+		public uint[] AddQuad(vec3[] v, vec2[] uv)
 		{
-			int[] result = null;
+			uint[] result = new uint[4];
 			return AddQuad(v, uv, ref result);
 		}
 
-		public int[] AddQuad(vec3[] v, vec2[] uv, ref int[] result)
+		public uint[] AddQuad(vec3[] v, vec2[] uv, ref uint[] result)
 		{
-			if (result == null)
-				result = new int[4];
-
 			var n = vec3.Cross((v[2] - v[0]), (v[0] - v[1])).normalized;
 
 			Grow(4, 2);
@@ -236,12 +225,12 @@ namespace ProcGenEx
 			return result;
 		}
 
-		public int[] AddPlane(plane p, vec3 origin, vec2 size, vec2i step)
+		public uint[] AddPlane(plane p, vec3 origin, vec2 size, vec2i step)
 		{
 			return AddPlane(p, origin, size, step, vec3.forward);
 		}
 
-		public int[] AddPlane(plane p, vec3 origin, vec2 size, vec2i step, vec3 forward)
+		public uint[] AddPlane(plane p, vec3 origin, vec2 size, vec2i step, vec3 forward)
 		{
 			var n = MathEx.Convert.ToVec3(p.normal);
 			vec3 right = vec3.Cross(n, forward);
@@ -251,7 +240,7 @@ namespace ProcGenEx
 			int tn = step.x * step.y * 2;
 			vec2 dv = size.Div(step);
 
-			int[] result = new int[vn];
+			uint[] result = new uint[vn];
 
 			Grow(vn, tn);
 
@@ -278,14 +267,14 @@ namespace ProcGenEx
 			return result;
 		}
 
-		public int[] AddPlane(IEnumerator<Tuple<vec3, vec3>> vertices, vec2i step, bool revert = false)
+		public uint[] AddPlane(IEnumerator<Tuple<vec3, vec3>> vertices, vec2i step, bool revert = false)
 		{
 			int cn = step.x + 1;
 			int rn = step.y + 1;
 			int vn = cn * rn;
 			int tn = step.x * step.y * 2;
 
-			int[] result = new int[vn];
+			uint[] result = new uint[vn];
 
 			Grow(vn, tn);
 
@@ -322,28 +311,28 @@ namespace ProcGenEx
 			return result;
 		}
 
-		public int[] AddStripe(curve<vec3> c, float width, vec3 up)
+		public uint[] AddStripe(curve<vec3> c, float width, vec3 up)
 		{
 			return AddStripe(c, new vec2(-width / 2f, width / 2f), up);
 		}
 
-		public int[] AddStripe(curve<vec3> c, vec2 width, vec3 up)
+		public uint[] AddStripe(curve<vec3> c, vec2 width, vec3 up)
 		{
 			return AddStripe(c, width
 				, new Tuple<float, vec3>[] { Tuple.Create(0f, up), Tuple.Create(1f, up) }, Easing.makeEaseMirror(Easing.easeExpoOut)
 				, 0, c.numberOfNodes, 1f);
 		}
 
-		public int[] AddStripe(curve<vec3> c, vec2 width, vec3 up, float stepMultiplier)
+		public uint[] AddStripe(curve<vec3> c, vec2 width, vec3 up, float stepMultiplier)
 		{
 			return AddStripe(c, width
 				, new Tuple<float, vec3>[] { Tuple.Create(0f, up), Tuple.Create(1f, up) }, Easing.makeEaseMirror(Easing.easeExpoOut)
 				, 0, c.numberOfNodes, stepMultiplier);
 		}
 
-		public int[] AddStripe(curve<vec3> c, vec2 width, Tuple<float, vec3>[] ups, Func<float, float> upEaseFn, int startNode, int endNode, float stepMultiplier)
+		public uint[] AddStripe(curve<vec3> c, vec2 width, Tuple<float, vec3>[] ups, Func<float, float> upEaseFn, int startNode, int endNode, float stepMultiplier)
 		{
-			List<int> result = new List<int>();
+			List<uint> result = new List<uint>();
 
 			float sl = c.length;
 			float islsl = stepMultiplier / (sl * sl);
@@ -385,14 +374,14 @@ namespace ProcGenEx
 
 		#endregion
 
-		public int CreateVertex(vec3 v, vec3 n)
+		public uint CreateVertex(vec3 v, vec3 n)
 		{
 			return CreateVertex(v, n, vec2.empty);
 		}
 
-		public int CreateVertex(vec3 v, vec3 n, vec2 u)
+		public uint CreateVertex(vec3 v, vec3 n, vec2 u)
 		{
-			var vi = vertices.Count;
+			var vi = (uint)vertices.Count;
 
 			vertices.Add(v);
 			normals.Add(n);
@@ -401,17 +390,17 @@ namespace ProcGenEx
 			return vi;
 		}
 
-		public int CopyVertex(int vi)
+		public uint CopyVertex(uint vi)
 		{
-			return CreateVertex(vertices[vi], normals[vi], uvs[vi]);
+			return CreateVertex(vertices.at(vi), normals.at(vi), uvs.at(vi));
 		}
 
-		public int CopyVertex(int vi, vec3 dv)
+		public uint CopyVertex(uint vi, vec3 dv)
 		{
-			return CreateVertex(vertices[vi] + dv, normals[vi], uvs[vi]);
+			return CreateVertex(vertices.at(vi) + dv, normals.at(vi), uvs.at(vi));
 		}
 
-		public void MakeTriangle(int a, int b, int c)
+		public void MakeTriangle(uint a, uint b, uint c)
 		{
 			var ti = triangles.Count;
 
@@ -420,13 +409,13 @@ namespace ProcGenEx
 			triangles.Add(c);
 		}
 
-		public void MakeQuad(int a, int b, int c, int d)
+		public void MakeQuad(uint a, uint b, uint c, uint d)
 		{
 			MakeTriangle(a, b, c);
 			MakeTriangle(a, c, d);
 		}
 
-		public void MakeFan(params int[] ps)
+		public void MakeFan(params uint[] ps)
 		{
 			for (int i = 1; i < ps.Length - 1; i++)
 			{
@@ -434,7 +423,30 @@ namespace ProcGenEx
 			}
 		}
 
-		public void Extrude(int[] contour, vec3 direction, int steps)
+		public MeshBuilder Simplify(float eps = float.Epsilon)
+		{
+			uint vi = 0;
+			var sortedVertices = vertices.Select(v => (v: v, i: vi++)).ToArray().Sort((a, b) => a.v.CompareTo(b.v, eps));
+
+			int i = 0;
+			var indexRemap = new Dictionary<uint, uint>();
+			for (i = 0; i < sortedVertices.Length - 1; i++)
+			{
+				if (sortedVertices[i].v.Equals(sortedVertices[i + 1].v, eps))
+				{
+					indexRemap.Add(sortedVertices[i+1].i, indexRemap.Get(sortedVertices[i].i, sortedVertices[i].i));
+				}
+			}
+
+			for (i = 0; i < triangles.Count; i++)
+			{
+				triangles[i] = indexRemap.Get(triangles[i], triangles[i]);
+			}
+
+			return this;
+		}
+
+		public void Extrude(uint[] contour, vec3 direction, int steps)
 		{
 			// light overgrow in triangle count expected.
 			Grow(contour.Length * steps, contour.Length * steps * 2);
@@ -442,10 +454,10 @@ namespace ProcGenEx
 			vec3 dv = direction / steps;
 			for (int si = 0; si < steps; si++)
 			{
-				int pv = CopyVertex(contour[0], dv);
+				var pv = CopyVertex(contour[0], dv);
 				for (int i = 1; i < contour.Length; i++)
 				{
-					int cv = CopyVertex(contour[i], dv);
+					var cv = CopyVertex(contour[i], dv);
 
 					MakeQuad(contour[i - 1], pv, cv, contour[i]);
 
@@ -458,16 +470,16 @@ namespace ProcGenEx
 
 		public void Slice(Plane plane)
 		{
-			int[] v2v = new int[vertices.Count].Initialize(-1);
+			uint[] v2v = new uint[vertices.Count].Initialize(uint.MaxValue);
 			List<vec3> vs = vertices;
 			List<vec3> ns = normals;
 			List<vec2> us = uvs;
-			List<int> ts = triangles;
+			List<uint> ts = triangles;
 
 			vertices = new List<vec3>(vs.Count); ;
 			normals = new List<vec3>(vs.Count);
 			uvs = new List<vec2>(vs.Count);
-			triangles = new List<int>(ts.Count);
+			triangles = new List<uint>(ts.Count);
 
 
 			for (int i = 0; i < vs.Count; i++)
@@ -481,7 +493,7 @@ namespace ProcGenEx
 
 			for (int i = 0; i < ts.Count; i += 3)
 			{
-				int st = ((v2v[ts[i]] < 0 ? 0 : 1) << 0) + ((v2v[ts[i + 1]] < 0 ? 0 : 1) << 1) + ((v2v[ts[i + 2]] < 0 ? 0 : 1) << 2);
+				int st = ((v2v[ts[i]] == uint.MaxValue ? 0 : 1) << 0) + ((v2v[ts[i + 1]] == uint.MaxValue ? 0 : 1) << 1) + ((v2v[ts[i + 2]] == uint.MaxValue ? 0 : 1) << 2);
 
 				if (st == 0)
 					continue;
@@ -493,38 +505,38 @@ namespace ProcGenEx
 
 				vec3 ab, bc, ca;
 				float abd, bcd, cad;
-				bool abi = plane.Intersect(vs[ts[i]], vs[ts[i + 1]], out ab, out abd);
-				bool bci = plane.Intersect(vs[ts[i + 1]], vs[ts[i + 2]], out bc, out bcd);
-				bool cai = plane.Intersect(vs[ts[i + 2]], vs[ts[i]], out ca, out cad);
+				bool abi = plane.Intersect(vs.at(ts[i]), vs.at(ts[i + 1]), out ab, out abd);
+				bool bci = plane.Intersect(vs.at(ts[i + 1]), vs.at(ts[i + 2]), out bc, out bcd);
+				bool cai = plane.Intersect(vs.at(ts[i + 2]), vs.at(ts[i]), out ca, out cad);
 
 
-				List<int> nvs = new List<int>(4);
+				List<uint> nvs = new List<uint>(4);
 
-				if (!(v2v[ts[i]] < 0))
+				if (!(v2v[ts[i]] == uint.MaxValue))
 				{
 					nvs.Add(v2v[ts[i]]);
 				}
 				if (abi && (abd > 0 && abd < 1))
 				{
-					nvs.Add(CreateVertex(ab, abd.Slerp(ns[ts[i]], ns[ts[i + 1]])));
+					nvs.Add(CreateVertex(ab, abd.Slerp(ns.at(ts[i]), ns.at(ts[i + 1]))));
 				}
 
-				if (!(v2v[ts[i + 1]] < 0))
+				if (!(v2v[ts[i + 1]] == uint.MaxValue))
 				{
 					nvs.Add(v2v[ts[i + 1]]);
 				}
 				if (bci && (bcd > 0 && bcd < 1))
 				{
-					nvs.Add(CreateVertex(bc, bcd.Slerp(ns[ts[i + 1]], ns[ts[i + 2]])));
+					nvs.Add(CreateVertex(bc, bcd.Slerp(ns.at(ts[i + 1]), ns.at(ts[i + 2]))));
 				}
 
-				if (!(v2v[ts[i + 2]] < 0))
+				if (!(v2v[ts[i + 2]] == uint.MaxValue))
 				{
 					nvs.Add(v2v[ts[i + 2]]);
 				}
 				if (cai && (cad > 0 && cad < 1))
 				{
-					nvs.Add(CreateVertex(ca, cad.Slerp(ns[ts[i + 2]], ns[ts[i]])));
+					nvs.Add(CreateVertex(ca, cad.Slerp(ns.at(ts[i + 2]), ns.at(ts[i]))));
 				}
 
 				MakeFan(nvs.ToArray());
@@ -604,19 +616,19 @@ namespace ProcGenEx
 
 			for (int i = 0; i < triangles.Count; i += 3)
 			{
-				int ai = triangles[i];
-				int bi = triangles[i + 1];
-				int ci = triangles[i + 2];
+				var ai = triangles[i];
+				var bi = triangles[i + 1];
+				var ci = triangles[i + 2];
 
-				vec3 a = vertices[ai];
-				vec3 b = vertices[bi];
-				vec3 c = vertices[ci];
+				vec3 a = vertices.at(ai);
+				vec3 b = vertices.at(bi);
+				vec3 c = vertices.at(ci);
 
 				vec3 n = ((b - a) % (c - a)).normalized;
 
-				normals[ai] = normals[ai].isEmpty ? n : (normals[ai] + n) / 2f;
-				normals[bi] = normals[bi].isEmpty ? n : (normals[bi] + n) / 2f;
-				normals[ci] = normals[ci].isEmpty ? n : (normals[ci] + n) / 2f;
+				normals.at(ai, normals.at(ai).isEmpty ? n : (normals.at(ai) + n) / 2f);
+				normals.at(bi, normals.at(bi).isEmpty ? n : (normals.at(bi) + n) / 2f);
+				normals.at(ci, normals.at(ci).isEmpty ? n : (normals.at(ci) + n) / 2f);
 			}
 		}
 
