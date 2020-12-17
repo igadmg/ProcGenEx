@@ -7,10 +7,10 @@ namespace ProcGenEx
 		public uint a;
 		public uint b;
 
-		public Edge(uint b, uint a)
+		public Edge(uint a, uint b)
 		{
-			this.b = b;
 			this.a = a;
+			this.b = b;
 		}
 
 		public Edge Reverse()
