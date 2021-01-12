@@ -3,7 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SystemEx;
+using Unity.Collections;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngineEx;
 
 namespace ProcGenEx
@@ -90,14 +92,53 @@ namespace ProcGenEx
 			triangles = new List<uint>(TriangleCount * 3);
 		}
 
+
+		struct MeshVertex
+		{
+			public Vector3 position;
+			public Vector2 normal;
+			public Vector2 uv;
+		}
+
 		public Mesh ToMesh()
 		{
 			Mesh m = new Mesh();
 
-			m.vertices = vertices.ConvertAll(v => v.ToVector3()).ToArray();
-			m.normals = normals.ConvertAll(v => v.ToVector3()).ToArray();
-			m.uv = uvs.ConvertAll(v => v.ToVector2()).ToArray();
-			m.triangles = triangles.Select(i => (int)i).ToArray();
+			if (vertices.Count <= UInt16.MaxValue)
+			{
+				m.vertices = vertices.ConvertAll(v => v.ToVector3()).ToArray();
+				m.normals = normals.ConvertAll(v => v.ToVector3()).ToArray();
+				m.uv = uvs.ConvertAll(v => v.ToVector2()).ToArray();
+				m.triangles = triangles.Select(i => (int)i).ToArray();
+			}
+			else /*if(vertices.Count <= UInt32.MaxValue)*/
+			{
+				m.indexFormat = IndexFormat.UInt32;
+
+				var layout = new[] {
+					new VertexAttributeDescriptor(VertexAttribute.Position, VertexAttributeFormat.Float32, 3),
+					new VertexAttributeDescriptor(VertexAttribute.Normal, VertexAttributeFormat.Float32, 2),
+					new VertexAttributeDescriptor(VertexAttribute.TexCoord0, VertexAttributeFormat.Float32, 2),
+				};
+
+				m.SetVertexBufferParams(vertices.Count, layout);
+				var verts = new NativeArray<MeshVertex>(vertices.Count, Allocator.Temp);
+				for (int i = 0; i < vertices.Count; i++)
+				{
+					var vertex = new MeshVertex();
+					vertex.position = vertices[i];
+					if (i < normals.Count)
+						vertex.normal = normals[i].ToVector3();
+					if (i < uvs.Count)
+						vertex.uv = uvs[i];
+					verts[i] = vertex;
+				}
+				m.SetVertexBufferData(verts, 0, 0, vertices.Count);
+				m.SetIndexBufferParams(triangles.Count, IndexFormat.UInt32);
+				m.SetIndexBufferData(triangles, 0, 0, triangles.Count);
+
+				m.SetSubMesh(0, new SubMeshDescriptor(0, triangles.Count));
+			}
 
 			m.Apply();
 
@@ -290,7 +331,12 @@ namespace ProcGenEx
 
 		public uint CreateVertex(vec3 v, vec3 n)
 		{
-			return CreateVertex(v, n, vec2.empty);
+			var vi = (uint)vertices.Count;
+
+			vertices.Add(v);
+			normals.Add(n);
+
+			return vi;
 		}
 
 		public uint CreateVertex(vec3 v, vec3 n, vec2 u)

@@ -22,8 +22,31 @@ namespace ProcGenEx
 
 			mesh.AddQuad((-vec3.right + vec3.forward) * 0.5f
 				, (vec3.right + vec3.forward) * 0.5f
-				, (vec3.right - vec3.forward) *0.5f
-				, (-vec3.right - vec3.forward) *0.5f);
+				, (vec3.right - vec3.forward) * 0.5f
+				, (-vec3.right - vec3.forward) * 0.5f);
+
+			return mesh;
+		}
+
+		public static PlaneMeshBuilder Create(vec2i size, IEnumerable<vec2> points)
+		{
+			PlaneMeshBuilder mesh = new PlaneMeshBuilder(4, 2);
+
+			int vi = 0;
+			uint[] vs = new uint[size.x * size.y];
+			foreach (var p in points)
+			{
+				vs[vi++] = mesh.CreateVertex(p.xzy(0), vec3.up);
+			}
+
+			vi = 0;
+			for (int i = 0; i < vs.Length - size.x - 1; i++, vi++)
+			{
+				if (((vi + 1) % size.x) == 0)
+					continue;
+
+				mesh.MakeQuad(vs[vi + 0 + size.x], vs[vi + 1 + size.x], vs[vi + 1], vs[vi + 0]);
+			}
 
 			return mesh;
 		}
