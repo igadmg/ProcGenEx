@@ -430,7 +430,7 @@ namespace ProcGenEx
 
 		public void Slice(Plane plane)
 		{
-			uint[] v2v = new uint[vertices.Count].Initialize(uint.MaxValue);
+			uint[] v2v = new uint[vertices.Count].Fill(uint.MaxValue);
 			List<vec3> vs = vertices;
 			List<vec3> ns = normals;
 			List<vec2> us = uvs;

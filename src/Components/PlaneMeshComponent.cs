@@ -13,9 +13,9 @@ namespace ProcGenEx
 		RectangleGridComponent grid;
 
 		[Component]
-		[SerializeField, RequireInterface(typeof(IHeightSampler))]
+		[SerializeField, RequireInterface(typeof(IGridSampler))]
 		Component heightSampler_;
-		IHeightSampler heightSampler => (IHeightSampler)heightSampler_;
+		IGridSampler heightSampler => (IGridSampler)heightSampler_;
 
 		public float amplitude = 1;
 		public bool normalized; // normalize plane coordinates when sampling the height.
@@ -41,7 +41,7 @@ namespace ProcGenEx
 						if (normalized)
 							c /= boundsSize;
 
-						float y = heightSampler.SampleHeight(c.xz()).y;
+						float y = heightSampler.SampleGrid(c.xz()).y;
 						plane.vertices[i] = plane.vertices[i].Y(y * amplitude);
 					}
 				}

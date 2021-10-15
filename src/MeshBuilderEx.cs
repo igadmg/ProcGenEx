@@ -17,7 +17,7 @@ namespace ProcGenEx
 
 		public uint[] Get(Edge edge)
 		{
-			return vertices.Get(edge, vertices.Get(edge.Reverse())?.Reversed())?.ToArray();
+			return vertices.Get(edge, () => vertices.Get(edge.Reverse())?.Reversed())?.ToArray();
 		}
 	}
 
@@ -115,7 +115,16 @@ namespace ProcGenEx
 		{
 			var edgeVertexMap = new EdgeVertexMap();
 
+			Func<int, int> newVerticesNumFn = n => n.Asum(2) + n;
+			Func<int, int> newTrianglesNumFn = n => n.Asum(3, 2);
+
 			int icount = mesh.triangles.Count;
+			int newVerticesNum = newVerticesNumFn(steps) * icount;
+			int newTrianglesNum = newTrianglesNumFn(steps) * icount;
+
+			mesh.Grow(newVerticesNum, newTrianglesNum);
+			uint[] newVertices = new uint[newVerticesNum];
+
 			for (int i = 0; i < icount; i += 3)
 			{
 				var ta = mesh.triangles[i];
@@ -125,13 +134,6 @@ namespace ProcGenEx
 				var vb = mesh.vertices.at(tb);
 				var vc = mesh.vertices.at(tc);
 
-				Func<int, int> newVerticesNumFn = n => n.Asum(2) + n;
-				Func<int, int> newTrianglesNumFn = n => n.Asum(3, 2);
-				int newVerticesNum = newVerticesNumFn(steps);
-				int newTrianglesNum = newTrianglesNumFn(steps);
-
-				mesh.Grow(newVerticesNum, newTrianglesNum);
-				uint[] newVertices = new uint[newVerticesNum];
 				int nvi = 0;
 
 				// Generate new vertices.
