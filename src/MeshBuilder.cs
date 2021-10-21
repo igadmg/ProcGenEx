@@ -302,8 +302,8 @@ namespace ProcGenEx
 
 				up = (1 - upEaseFn(upa)).Lerp(up, nup);
 				vec3 forward = i.velocity.normalized;
-				vec3 right = (up % forward).normalized;
-				up = (i.velocity % right).normalized;
+				vec3 right = (up | forward).normalized;
+				up = (i.velocity | right).normalized;
 
 				if (i.t == 0)
 				{
@@ -584,7 +584,7 @@ namespace ProcGenEx
 				vec3 b = vertices.at(bi);
 				vec3 c = vertices.at(ci);
 
-				vec3 n = ((b - a) % (c - a)).normalized;
+				vec3 n = ((b - a) | (c - a)).normalized;
 
 				normals.at(ai, normals.at(ai).isEmpty ? n : (normals.at(ai) + n) / 2f);
 				normals.at(bi, normals.at(bi).isEmpty ? n : (normals.at(bi) + n) / 2f);
