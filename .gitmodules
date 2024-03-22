@@ -1,12 +1,12 @@
 [submodule "Libraries/SystemEx"]
 	path = Libraries/SystemEx
-	url = git@github.com:yatagarasu25/SystemEx.git
+	url = git@github.com:igadmg/SystemEx.git
 [submodule "Libraries/MathEx"]
 	path = Libraries/MathEx
-	url = git@github.com:yatagarasu25/MathEx.git
+	url = git@github.com:igadmg/MathEx.git
 [submodule "Libraries/UnityEngineEx"]
 	path = Libraries/UnityEngineEx
-	url = git@github.com:yatagarasu25/UnityEngineEx.git
+	url = git@github.com:igadmg/UnityEngineEx.git
 [submodule "Libraries/UnityDissolve"]
 	path = Libraries/UnityDissolve
-	url = git@github.com:yatagarasu25/UnityDissolve.git
+	url = git@github.com:igadmg/UnityDissolve.git
